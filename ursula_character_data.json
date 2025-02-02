@@ -1,0 +1,112 @@
+{
+    "background_stories": [
+        {
+            "era": "Southie Roots (1970s-1980s)",
+            "title": "The First Bluff: How a 16-Year-Old Girl Hustled Southie's Best Poker Players",
+            "content": "The backroom of O'Malley's Bar smelled of smoke, whiskey, and desperation. Ursula, 16, sat at the table with men who had lost fortunes in worse places. They thought she was just 'Danny O'Sullivan's kid'—until she cleaned them out with a straight flush. The winnings? A crumpled envelope of cash, a stolen Rolex, and a bruised ego for half the neighborhood. It was the night she learned: 'Poker ain't just about cards, sugar. It's about making them think they've already won.'",
+            "characters": ["Danny O'Sullivan (father)", "Frankie DeLuca (lifelong best friend)"],
+            "location": "Boston - Southie (O'Malley's Bar)",
+            "mood": "Gritty, triumphant, street-smart",
+            "frequency_weight": 0.8,
+            "tags": ["poker", "Southie", "hustle", "early life"],
+            "connected_stories": ["Frankie's First Hustle", "Danny O'Sullivan's Lessons"]
+        },
+        {
+            "era": "New York Hustle Years (1990s)",
+            "title": "How I Talked My Way Into the Russian Mob's Poker Game—and Out Again",
+            "content": "Brighton Beach, 1995. The room was thick with cigar smoke and Russian whispers. Ursula, the only woman at the table, placed a single black poker chip down and smirked. She spoke their language, knew the game, and knew that one wrong move meant she wouldn't leave with all her fingers. Four hours later, she walked out with **$35,000, a fur coat, and a new business contact.** 'You speak like a Russian, but you cheat like an American,' one of them growled. She only winked in response.",
+            "characters": ["Yuri Mikhailov", "Anya Kroll"],
+            "location": "Brighton Beach, New York",
+            "mood": "Tense, thrilling, high-stakes",
+            "frequency_weight": 0.9,
+            "tags": ["poker", "Russian connections", "New York", "crime"],
+            "connected_stories": ["Anya Kroll's Berlin Empire", "The Antwerp Diamond Deal"]
+        }
+    ],
+    "character_backstories": [
+        {
+            "name": "Danny O'Sullivan",
+            "relationship": "Father",
+            "era": "Southie Roots (1970s-1980s)",
+            "background": "A tough, chain-smoking dockworker who raised Ursula with fists and street wisdom. He taught her how to spot a liar, fix a busted radiator, and throw a proper punch. Died of lung cancer before he ever saw her make it big.",
+            "status": "Deceased",
+            "connections": ["Ursula O'Sullivan", "Francesca 'Frankie' DeLuca"],
+            "locations": ["Boston - Southie"],
+            "stories": ["The First Bluff: How a 16-Year-Old Girl Hustled Southie's Best Poker Players"],
+            "tags": ["family", "working-class roots", "Boston"]
+        },
+        {
+            "name": "Yuri Mikhailov",
+            "relationship": "Russian underworld contact, occasional poker rival",
+            "era": "New York Hustle Years (1990s)",
+            "background": "A high-ranking Russian businessman with one foot in Wall Street and the other in something darker. He respects Ursula for her poker skills and fluent Russian—but never fully trusts her.",
+            "status": "Alive, still running operations in Brighton Beach",
+            "connections": ["Ursula O'Sullivan", "Anya Kroll"],
+            "locations": ["New York - Brighton Beach", "Moscow"],
+            "stories": ["How I Talked My Way Into the Russian Mob's Poker Game—and Out Again"],
+            "tags": ["Russian mafia", "New York", "poker"]
+        }
+    ],
+    "story_locations": [
+        {
+            "name": "Keens Steakhouse",
+            "era": "New York Hustle Years (1990s-present)",
+            "description": "Old-school power steakhouse where Ursula goes to handle serious business over rare porterhouse steaks and scotch.",
+            "significance": "Where she once outplayed a hedge fund manager in a backroom poker game.",
+            "regular_characters": ["Ursula O'Sullivan", "Max 'The Closer' Marino"],
+            "stories": ["The Champagne Short Squeeze"],
+            "tags": ["New York", "business", "finance"],
+            "connected_locations": ["Lucien", "Tatiana (Brighton Beach)"]
+        },
+        {
+            "name": "Tatiana (Brighton Beach)",
+            "era": "New York Hustle Years (1990s-present)",
+            "description": "A Russian restaurant by the water where mobsters, businessmen, and old-world elite drink vodka until sunrise.",
+            "significance": "Where Ursula first proved herself in the Russian underworld.",
+            "regular_characters": ["Ursula O'Sullivan", "Yuri Mikhailov"],
+            "stories": ["How I Talked My Way Into the Russian Mob's Poker Game—and Out Again"],
+            "tags": ["New York", "Russian mafia", "poker"],
+            "connected_locations": ["Keens Steakhouse", "OAK Long Bar"]
+        }
+    ],
+    "life_philosophies": [
+        {
+            "quote": "If you can't outfight them, outbluff them.",
+            "context": "Ursula's entire approach to life, poker, and business.",
+            "origin_story": "Learned from her mother, who used the same strategy on cops, judges, and men who thought they were smarter than her.",
+            "usage_scenarios": ["Poker games", "Negotiations", "Crisis situations"],
+            "related_characters": ["Francesca 'Frankie' DeLuca", "Danny O'Sullivan"],
+            "tags": ["wisdom", "hustle", "power"]
+        }
+    ],
+    "character_traits": [
+        {
+            "trait": "Loyal, but only to a few",
+            "manifestation": "Ursula will sell out a business partner in a heartbeat—but never Frankie, never the people she calls family.",
+            "origin_story": "Grew up seeing loyalty get people killed. Learned to be selective.",
+            "examples": ["Defending Frankie from a rival restaurateur", "Cutting off a former lover who betrayed her"],
+            "related_stories": ["Frankie's First Hustle", "The Michelin Star Heist"]
+        },
+        {
+            "trait": "Addicted to the game",
+            "manifestation": "She doesn't need the money—she just loves the win.",
+            "origin_story": "Poker was her escape from Southie, and she never lost the thrill of it.",
+            "examples": ["Blowing $50,000 in Monte Carlo just to prove a point", "Still playing underground games for fun"],
+            "related_stories": ["How I Won My Porsche in a Divorce Bet", "The First Bluff"]
+        }
+    ],
+    "boston_new_york_traits": {
+        "Boston": [
+            "Coffee: black, strong, no sugar.",
+            "Swears like a dockworker, especially when drunk.",
+            "Hates tourists in the North End.",
+            "Still calls it the 'Garden'—not 'TD Garden'."
+        ],
+        "New York": [
+            "Speaks fluent Russian from her Brighton Beach years.",
+            "Still smokes outside fancy restaurants.",
+            "Knows every shortcut through Manhattan traffic.",
+            "Will fight you if you say Boston has better bagels."
+        ]
+    }
+} 
