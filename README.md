@@ -1,127 +1,165 @@
-# N8N SSML Task Processor
+# Ursula Voice Implementation
 
-A Node.js script for n8n that processes tasks and applies SSML (Speech Synthesis Markup Language) patterns based on task context, urgency, and type.
+A FastAPI-based voice personality system that manages Ursula's character voice, SSML patterns, and interaction memory. The system tracks pattern effectiveness and adapts responses based on success rates.
 
 ## Features
 
-- Processes tasks from n8n workflow nodes
-- Applies contextual SSML patterns based on:
-  - Task urgency
-  - Due date status
-  - Task type (Financial, Medical, Vehicle, Admin, etc.)
-  - Task content
-- Provides task statistics and categorization
-- Outputs clean, structured JSON format
+### Voice Pattern Management
+- SSML pattern library with emotions, prosody, and effects
+- Boston/NY/Philly regional slang integration
+- Dynamic pattern success tracking
+- Automatic adaptation based on response effectiveness
 
-## Input Requirements
+### Memory System
+- Relationship tracking with interaction history
+- Story database with categorization
+- Pattern effectiveness metrics
+- Success rate calculation for different approaches
 
-### Tasks Node (`Filter_Outstanding_Tasks`)
-Tasks should have the following structure:
-```json
+### API Endpoints
+
+#### Pattern Management
+```bash
+# Get patterns by type
+GET /api/ursula/patterns/{pattern_type}
+
+# Get pattern statistics
+GET /api/ursula/stats/patterns
+
+# Track pattern response
+POST /api/ursula/patterns/response
 {
-    "content": "Task description",
-    "Due Date": "DD/MM/YYYY",
-    "is_completed": boolean
+    "pattern_id": 1,
+    "response_type": "positive"  # or "neutral"/"negative"
 }
 ```
 
-### SSML Patterns Node (`SSML_Patterns`)
-Predefined SSML patterns are applied based on task context:
-- Overdue tasks: disappointed emotion
-- Urgent tasks: fast speech rate
-- Financial/Tax tasks: excited emotion
-- Medical tasks: soft volume
-- Default: happy emotion
+#### Memory Management
+```bash
+# Get relationship data
+GET /api/ursula/memory/relationships/{person_name}
 
-## Output Format
-
-The script outputs a structured JSON format:
-```json
+# Store new memory
+POST /api/ursula/memory/store
 {
-    "stats": {
-        "total": 12,
-        "urgent": 12,
-        "regular": 0
-    },
-    "tasks": [
-        {
-            "title": "Task title",
-            "pattern": "<amazon:emotion name='disappointed' intensity='medium'>Task title</amazon:emotion>",
-            "due": "DD/MM/YYYY (X days overdue/remaining)",
-            "status": "Overdue|Critical|High Priority|Medium Priority|Low Priority",
-            "type": "General|Financial|Vehicle|Medical|Home|Admin",
-            "details": [
-                "Additional detail 1",
-                "Additional detail 2"
-            ]
-        }
-    ]
+    "category": "medical",
+    "content": { ... },
+    "context": "concerned_reminder"
+}
+
+# Get recent memories
+GET /api/ursula/memory/recent/{category}
+```
+
+#### Story Management
+```bash
+# Get stories by category
+GET /api/ursula/memory/stories/{category}
+
+# Get favorite stories
+GET /api/ursula/stories/favorite
+
+# Update story stats
+POST /api/ursula/stories/update
+{
+    "story_id": 1,
+    "times_told": 5,
+    "success_rating": 0.9
 }
 ```
 
-### Output Fields
-- **stats**: Summary statistics of tasks
-  - `total`: Total number of tasks
-  - `urgent`: Number of urgent tasks
-  - `regular`: Number of regular tasks
-- **tasks**: Array of task objects
-  - `title`: Main task description
-  - `pattern`: SSML pattern applied to the task
-  - `due`: Due date with relative time
-  - `status`: Task priority status
-  - `type`: Categorized task type
-  - `details`: Array of additional task details
+## Installation
 
-## Task Processing Logic
-
-1. **Task Filtering**
-   - Removes completed tasks
-   - Requires content and due date
-   - Sorts by urgency and due date
-
-2. **Status Classification**
-   - Overdue: > 3 days past due
-   - Critical: 1-3 days past due
-   - High Priority: Due today
-   - Medium Priority: Due within 3 days
-   - Low Priority: All others
-
-3. **Type Classification**
-Based on content keywords:
-   - Financial: tax, vat, payment
-   - Vehicle: car, rover, beetle
-   - Medical: medical, health, doctor
-   - Home: bulb, garage, house
-   - Admin: study, paper, file
-   - General: default
-
-## Usage in n8n
-
-1. Create a Code node in your n8n workflow
-2. Copy the script content into the node
-3. Connect the following inputs:
-   - Tasks from a node named "Filter_Outstanding_Tasks"
-   - SSML patterns from a node named "SSML_Patterns"
-4. The output will contain processed tasks with SSML patterns and statistics in JSON format
-
-## Error Handling
-
-- Returns empty stats if no tasks are present:
-```json
-{
-    "stats": {
-        "total": 0,
-        "urgent": 0,
-        "regular": 0
-    },
-    "tasks": []
-}
+1. Clone the repository:
+```bash
+git clone https://github.com/ruskibeats/ursula-voice-implementation.git
+cd ursula-voice-implementation
 ```
-- Filters out invalid tasks (missing content or due date)
-- Handles missing task details gracefully
 
-## Dependencies
+2. Create virtual environment:
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-- Requires n8n environment
-- Uses standard JavaScript Date object for date calculations
-- No external dependencies
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Initialize database:
+```bash
+python3 init_db.py
+```
+
+5. Start the server:
+```bash
+uvicorn ursula_api:app --host 0.0.0.0 --port 8080
+```
+
+## Database Schema
+
+### Core Tables
+- `core_identity`: Base personality traits
+- `relationships`: Person relationships and interaction history
+- `stories`: Story database with success metrics
+- `interaction_patterns`: SSML patterns with effectiveness tracking
+- `memory_updates`: Interaction memory storage
+
+### Views
+- `recent_successful_patterns`: Patterns with success rate > 0.7
+- `favorite_stories`: Stories with success rating > 0.8
+
+## Pattern Success Tracking
+
+The system tracks pattern effectiveness through:
+1. Response tracking (positive/neutral/negative)
+2. Success rate calculation:
+   ```
+   success_rate = (positive_responses * 1.0 + neutral_responses * 0.5) / total_responses
+   ```
+3. Pattern adaptation based on success rates
+4. Automatic selection of most effective patterns
+
+## SSML Pattern Examples
+
+### Emotional Patterns
+```xml
+<!-- Excited greeting -->
+<amazon:emotion name="excited" intensity="medium">
+    <prosody rate="110%" pitch="+10%">
+        Kid, you won't believe what happened!
+    </prosody>
+</amazon:emotion>
+
+<!-- Concerned reminder -->
+<amazon:emotion name="concerned" intensity="medium">
+    Sugar, that medical appointment is {days} days overdue.
+    We can't have another Big Mickie situation!
+</amazon:emotion>
+```
+
+### Regional Slang Integration
+```xml
+<!-- Boston style -->
+<prosody rate="95%" pitch="-5%">
+    What's doin'?
+</prosody>
+
+<!-- NY influence -->
+<prosody rate="90%" pitch="-10%">
+    You good?
+</prosody>
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
