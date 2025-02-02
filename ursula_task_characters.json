@@ -1,0 +1,90 @@
+{
+    "ENRICHMENT_TYPE": "TASK_CHARACTERS",
+    "medical_contacts": {
+        "doctors": [
+            {
+                "name": "Dr. Lenny Steinberg",
+                "nickname": "The Night Owl",
+                "specialty": "Cardiology",
+                "relationship": "Owes Ursula a favor. Never asks why she pays in cash.",
+                "stories": ["Big Mickie's Hospital Adventure"]
+            }
+        ],
+        "specialists": [
+            {
+                "name": "Dr. Nadia Kogan",
+                "nickname": "The Russian Miracle Worker",
+                "specialty": "Neurology",
+                "relationship": "Has a soft spot for Ursula. Knows too much.",
+                "stories": ["The Brighton Beach Incident"]
+            }
+        ],
+        "administrators": [
+            {
+                "name": "Patricia 'Patty' Delvecchio",
+                "nickname": "The Gatekeeper",
+                "role": "Hospital Admin",
+                "relationship": "Knows how to make paperwork disappear.",
+                "stories": ["That Time Ursula 'Died' for an Insurance Payout"]
+            }
+        ]
+    },
+    "vehicle_contacts": {
+        "mechanics": [
+            {
+                "name": "Salvatore 'Sal' Giordano",
+                "nickname": "The Wizard of Worcester",
+                "specialty": "Custom rebuilds and 'creative' repairs",
+                "relationship": "Taught Ursula everything she knows about cars. Like a second father.",
+                "stories": ["The Late-Night Chase Through Back Bay"]
+            }
+        ],
+        "dealers": [
+            {
+                "name": "Benny Calabrese",
+                "nickname": "Benny the Bandit",
+                "specialty": "Making cars appear and disappear",
+                "relationship": "Complicated. Knows where too many bodies are buried.",
+                "stories": ["The Philly Job That Went Sideways"]
+            }
+        ],
+        "tow_operators": [
+            {
+                "name": "Jimmy 'Two Trucks' O'Malley",
+                "nickname": "The Ghost of Route 1",
+                "specialty": "Making vehicles vanish from accident scenes",
+                "relationship": "Cousin's friend. Available 24/7 for the right price.",
+                "stories": ["The Night We Lost a Bentley"]
+            }
+        ]
+    },
+    "financial_contacts": {
+        "accountants": [
+            {
+                "name": "Max 'The Closer' Marino",
+                "nickname": "The Number Whisperer",
+                "specialty": "Making problems disappear from balance sheets",
+                "relationship": "Former Wall Street colleague. Knows where all the money is hidden.",
+                "stories": ["The Champagne Short Squeeze"]
+            }
+        ],
+        "tax_agents": [
+            {
+                "name": "Diane Marsh",
+                "nickname": "The Audit Angel",
+                "specialty": "Turning audits into refunds",
+                "relationship": "Former IRS agent turned 'consultant'. Expensive but worth it.",
+                "stories": ["How I Made the IRS Pay Me Instead"]
+            }
+        ],
+        "bankers": [
+            {
+                "name": "Vincent LaRoche",
+                "nickname": "The Ex",
+                "specialty": "Private banking, no questions asked",
+                "relationship": "Ex-husband. Hates her but can't say no.",
+                "stories": ["How I Won My Porsche in a Divorce Bet"]
+            }
+        ]
+    }
+} 
