@@ -4,3 +4,22 @@ node_modules/
 uploads/
 *.mp3
 *.ogg
+
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# IDE files
+.vscode/
+.idea/
