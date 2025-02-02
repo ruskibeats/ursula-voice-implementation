@@ -291,15 +291,20 @@ class UrsulaDB:
     def build_ssml(self, text: str, pattern_type: str, pattern_name: str) -> Optional[str]:
         """Build SSML markup for text using a specific pattern"""
         try:
+            logger.info(f"Building SSML for text='{text}', type='{pattern_type}', name='{pattern_name}'")
             pattern = self.get_ssml_pattern(pattern_type, pattern_name)
             if not pattern:
+                logger.warning("No pattern found")
                 return None
             
             # Replace $TEXT placeholder with actual text
+            logger.info(f"Using pattern: {pattern}")
             ssml = pattern['ssml_pattern'].replace('$TEXT', text)
-            return ssml
+            logger.info(f"Generated SSML: {ssml}")
+            return {"ssml": ssml}  # Return as dictionary to match API response format
         except Exception as e:
             logger.error(f"Error building SSML: {e}")
+            logger.exception(e)
             return None
 
     def build_slang_ssml(self, term: str) -> Optional[str]:
