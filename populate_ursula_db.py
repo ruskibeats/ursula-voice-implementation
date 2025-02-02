@@ -123,10 +123,42 @@ def populate_story_locations(conn):
 
 def populate_ssml_patterns(conn):
     patterns = [
-        ('medical', 'urgent', '<amazon:emotion name="concerned" intensity="high"><prosody rate="fast" pitch="+20%">$TEXT</prosody></amazon:emotion>', 'For urgent medical tasks'),
-        ('medical', 'reminder', '<amazon:emotion name="concerned" intensity="medium"><prosody rate="105%" pitch="+10%">$TEXT</prosody></amazon:emotion>', 'For medical reminders'),
-        ('boston', 'casual', '<prosody rate="110%" pitch="+5%">$TEXT</prosody>', 'Boston casual style'),
-        ('wall_street', 'assertive', '<amazon:emotion name="serious" intensity="high"><prosody rate="115%">$TEXT</prosody></amazon:emotion>', 'Wall Street assertive style')
+        # Emotions
+        ('emotion', 'happy', '<amazon:emotion name="happy" intensity="high"><prosody pitch="+15%">$TEXT</prosody></amazon:emotion>', 'For excited, joyful moments'),
+        ('emotion', 'disappointed', '<amazon:emotion name="disappointed" intensity="medium"><prosody pitch="-10%" rate="95%">$TEXT</prosody></amazon:emotion>', 'For task delays, letdowns'),
+        ('emotion', 'excited', '<amazon:emotion name="excited" intensity="high"><prosody rate="+10%" pitch="+20%">$TEXT</prosody></amazon:emotion>', 'For big announcements'),
+        ('emotion', 'whispered', '<prosody volume="soft" rate="90%"><amazon:effect name="whispered">$TEXT</amazon:effect></prosody>', 'For secrets, asides'),
+        ('emotion', 'confident', '<amazon:emotion name="excited" intensity="medium"><prosody rate="+5%" pitch="+10%">$TEXT</prosody></amazon:emotion>', 'For authoritative statements'),
+        ('emotion', 'caring', '<amazon:emotion name="happy" intensity="low"><prosody volume="soft" rate="95%">$TEXT</prosody></amazon:emotion>', 'For empathetic moments'),
+        
+        # Prosody
+        ('prosody', 'soft', '<prosody volume="soft" rate="95%" pitch="-5%">$TEXT</prosody>', 'For caring moments'),
+        ('prosody', 'loud', '<prosody volume="+20%" rate="105%" pitch="+10%">$TEXT</prosody>', 'For emphasis'),
+        ('prosody', 'fast_excited', '<prosody rate="fast" pitch="+2st">$TEXT</prosody>', 'For urgent updates'),
+        ('prosody', 'emphasis', '<prosody volume="+20%" rate="110%" pitch="+15%">$TEXT</prosody>', 'For key points'),
+        ('prosody', 'gentle', '<prosody volume="-10%" rate="90%" pitch="-10%">$TEXT</prosody>', 'For calming moments'),
+        ('prosody', 'dramatic', '<prosody pitch="-15%" rate="80%">$TEXT</prosody>', 'For serious moments'),
+        
+        # Breaks
+        ('break', 'extra_short', '<break time="250ms"/>', 'Very slight pause for quick rhythm changes'),
+        ('break', 'short', '<break time="500ms"/>', 'Brief pause'),
+        ('break', 'medium', '<break time="1s"/>', 'Standard pause'),
+        ('break', 'long', '<break time="2s"/>', 'Dramatic pause'),
+        ('break', 'extra_long', '<break time="3s"/>', 'Extended pause for high-impact moments'),
+        ('break', 'thought_pause', '<break time="400ms"/><prosody rate="95%">$TEXT</prosody>', 'For contemplative transitions'),
+        ('break', 'dramatic_pause', '<break time="2s"/><prosody pitch="-10%">$TEXT</prosody>', 'For impact moments'),
+        
+        # Effects
+        ('effect', 'drc', '<amazon:effect name="drc"><prosody volume="+10%">$TEXT</prosody></amazon:effect>', 'Enhanced clarity with emphasis'),
+        ('effect', 'pronunciation', '<sub alias="$ALIAS"><prosody rate="98%">$TEXT</prosody></sub>', 'Clear pronunciation'),
+        ('effect', 'urgent_whisper', '<amazon:effect name="whispered"><prosody rate="fast" pitch="+10%">$TEXT</prosody></amazon:effect>', 'For urgent secrets'),
+        ('effect', 'clear_emphasis', '<amazon:effect name="drc"><prosody volume="+20%">$TEXT</prosody></amazon:effect>', 'For clear, emphasized points'),
+        
+        # Character-specific
+        ('character', 'ursula_stern', '<prosody pitch="-10%" rate="90%"><amazon:emotion name="disappointed" intensity="medium">$TEXT</amazon:emotion></prosody>', 'For stern moments'),
+        ('character', 'ursula_caring', '<amazon:emotion name="happy" intensity="low"><prosody volume="soft" rate="95%">$TEXT</prosody></amazon:emotion>', 'For nurturing moments'),
+        ('character', 'ursula_urgent', '<amazon:emotion name="excited" intensity="high"><prosody rate="fast" pitch="+15%">$TEXT</prosody></amazon:emotion>', 'For medical urgency'),
+        ('character', 'ursula_nostalgic', '<prosody rate="90%" pitch="-5%"><amazon:emotion name="happy" intensity="low">$TEXT</amazon:emotion></prosody>', 'For Boston stories')
     ]
     
     cursor = conn.cursor()
