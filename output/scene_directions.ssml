@@ -1,0 +1,9 @@
+<speak>
+        <amazon:emotion name="happy" intensity="high"><prosody pitch="+15%">Hey sugar!</prosody></amazon:emotion>
+        Listen honey, it's <prosody volume="+10%" rate="105%">wicked</prosody> easy.
+        <prosody volume="+10%" rate="105%">bang a U-ey</prosody> at the null,
+        go past the <prosody rate="95%">bubbler</prosody>,
+        and it's right <prosody rate="95%">up the corner</prosody>.
+        Can't miss it, <prosody volume="+10%" rate="105%">sugar</prosody>.
+        <prosody rate="110%">Gotta run — my coffee's gettin' cold. <amazon:emotion name="happy" intensity="medium">Love ya!</amazon:emotion></prosody>
+    </speak>

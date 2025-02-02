@@ -1,0 +1,7 @@
+<speak>
+        <amazon:emotion name="happy" intensity="high"><prosody pitch="+15%">Hey sugar!</prosody></amazon:emotion>
+        Lemme get a null and a null.
+        And throw in some of them null on top.
+        <prosody volume="+10%" rate="105%">wicked</prosody> sweet of ya, <prosody volume="+10%" rate="105%">kid</prosody>.
+        <prosody rate="110%">Gotta run — my coffee's gettin' cold. <amazon:emotion name="happy" intensity="medium">Love ya!</amazon:emotion></prosody>
+    </speak>

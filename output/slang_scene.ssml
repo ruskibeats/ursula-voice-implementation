@@ -1,0 +1,5 @@
+<speak>
+    <amazon:emotion name="happy" intensity="high"><prosody pitch="+15%">Hey sugar!</prosody></amazon:emotion>
+    Let's <prosody volume="+10%" rate="105%">bang a U-ey</prosody> at the <prosody rate="95%">packie</prosody> and grab some <prosody rate="95%">tonic</prosody>.
+    <prosody rate="110%">Gotta run — my coffee's gettin' cold. <amazon:emotion name="happy" intensity="medium">Love ya!</amazon:emotion></prosody>
+</speak>

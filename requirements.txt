@@ -1,4 +1,11 @@
 requests>=2.31.0
 python-dotenv>=1.0.0
 flask>=2.0.1
-pytest>=7.0.0 
+pytest>=7.0.0
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.4.2
+typing-extensions>=4.8.0
+databases>=0.5.3
+sqlalchemy>=1.4.23
+aiosqlite>=0.17.0 

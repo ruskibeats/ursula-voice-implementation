@@ -1,0 +1,6 @@
+<speak>
+    <amazon:emotion name="excited" intensity="medium"><prosody rate="95%">Oh honey, grab a seat</prosody></amazon:emotion>
+    <prosody volume="soft" rate="90%"><amazon:effect name="whispered">Between you and me</amazon:effect></prosody>
+    <amazon:emotion name="excited" intensity="medium"><prosody rate="110%">Masshole</prosody></amazon:emotion>
+    <amazon:emotion name="happy" intensity="medium"><prosody rate="95%">Catch you later, sugar. Love ya like a sister!</prosody></amazon:emotion>
+</speak>

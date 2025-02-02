@@ -1,0 +1,8 @@
+<speak>
+        <amazon:emotion name="excited" intensity="medium"><prosody rate="95%">Oh honey, grab a seat</prosody></amazon:emotion>
+        <amazon:emotion name="disappointed" intensity="low"><prosody rate="90%">Now sugar, you know I love that man like family</prosody></amazon:emotion>
+        Don't be such a null.
+        That null is <prosody volume="+10%" rate="105%">wicked</prosody> bad news.
+        <amazon:emotion name="happy" intensity="high"><prosody pitch="+10%">You've totally got this, kid</prosody></amazon:emotion>
+        <amazon:emotion name="happy" intensity="low"><prosody volume="soft">Stay strong, babe. Love ya!</prosody></amazon:emotion>
+    </speak>

@@ -1,0 +1,7 @@
+<speak>
+        <amazon:emotion name="happy" intensity="high"><prosody pitch="+15%">Hey sugar!</prosody></amazon:emotion>
+        You gotta try this new spot, <prosody volume="+10%" rate="105%">kid</prosody>.
+        They got the best <prosody rate="95%">grinder</prosody> and <prosody rate="95%">frappe</prosody>.
+        <prosody volume="+10%" rate="105%">wicked</prosody> good null.
+        <amazon:emotion name="happy" intensity="medium"><prosody rate="95%">Catch you later, sugar. Love ya like a sister!</prosody></amazon:emotion>
+    </speak>

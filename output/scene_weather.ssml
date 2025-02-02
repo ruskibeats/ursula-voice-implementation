@@ -1,0 +1,6 @@
+<speak>
+        <amazon:emotion name="excited" intensity="medium"><prosody rate="95%">Oh honey, grab a seat</prosody></amazon:emotion>
+        We're getting a <prosody volume="+10%" rate="105%">wicked</prosody> bad null.
+        Better head to the <prosody rate="95%">packie</prosody> before the null start.
+        <amazon:emotion name="happy" intensity="medium"><prosody rate="105%">I'll catch ya soon, kid—don't go doin' anything I wouldn't do</prosody></amazon:emotion>
+    </speak>

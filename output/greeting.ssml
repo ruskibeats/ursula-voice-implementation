@@ -1,0 +1,4 @@
+<speak>
+    <amazon:emotion name="excited" intensity="medium"><prosody rate="110%" pitch="+10%">Kid, you won't believe</prosody></amazon:emotion>
+    That's <prosody volume="+10%" rate="105%">wicked</prosody> cool.
+</speak>

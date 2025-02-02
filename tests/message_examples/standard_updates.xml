@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<examples>
+    <standard-update-1>
+        <speak>
+        <amazon:emotion name="happy" intensity="high">Kid, your favorite PA here with updates!</amazon:emotion>
+        <break time="200ms"/>
+        <!-- Example content -->
+        </speak>
+    </standard-update-1>
+</examples>

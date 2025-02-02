@@ -1,0 +1,73 @@
+nohup: ignoring input
+INFO:     Started server process [193504]
+INFO:     Waiting for application startup.
+INFO:databases:Connected to database sqlite:///./ursula.db
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+INFO:     192.168.0.177:56595 - "GET /api/ursula/docs HTTP/1.1" 404 Not Found
+INFO:     192.168.0.177:56612 - "GET /api/ursula/docs HTTP/1.1" 404 Not Found
+INFO:     192.168.0.63:57210 - "GET /api/ursula/memory/recent/medical HTTP/1.1" 200 OK
+INFO:     192.168.0.177:56753 - "GET /api/ursula/memory/recent/medical HTTP/1.1" 200 OK
+INFO:     192.168.0.177:56765 - "GET /api/ursula/docs HTTP/1.1" 404 Not Found
+INFO:     192.168.0.177:56770 - "GET /api/ursula/docs HTTP/1.1" 404 Not Found
+INFO:     192.168.0.177:56779 - "GET /api/ursula/docs HTTP/1.1" 404 Not Found
+INFO:     192.168.0.63:35668 - "GET /api/ursula/memory/interactions/russ HTTP/1.1" 404 Not Found
+INFO:     192.168.0.63:40470 - "POST /api/ursula/relationships/update HTTP/1.1" 200 OK
+INFO:     192.168.0.63:58646 - "GET /api/ursula/stories/favorite?min_success_rate=0.5 HTTP/1.1" 404 Not Found
+INFO:     192.168.0.63:38826 - "POST /api/ursula/stories/update HTTP/1.1" 200 OK
+INFO:     192.168.0.63:42130 - "GET /api/ursula/stories/favorite?min_success_rate=0.8 HTTP/1.1" 200 OK
+INFO:     192.168.0.63:59660 - "GET /api/ursula/stats/patterns HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/root/scripts/venv/lib/python3.11/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/scripts/venv/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/scripts/venv/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/root/scripts/venv/lib/python3.11/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/root/scripts/venv/lib/python3.11/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/root/scripts/venv/lib/python3.11/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/root/scripts/venv/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/root/scripts/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/root/scripts/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/root/scripts/venv/lib/python3.11/site-packages/starlette/routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/root/scripts/venv/lib/python3.11/site-packages/starlette/routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "/root/scripts/venv/lib/python3.11/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/root/scripts/venv/lib/python3.11/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/root/scripts/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/root/scripts/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/root/scripts/venv/lib/python3.11/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/root/scripts/venv/lib/python3.11/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/scripts/venv/lib/python3.11/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/scripts/ursula_api.py", line 211, in get_pattern_stats
+    stats = db.get_pattern_stats(min_success_rate)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/scripts/ursula_db_api.py", line 545, in get_pattern_stats
+    cursor.execute('''
+sqlite3.OperationalError: no such table: interaction_patterns
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:databases:Disconnected from database sqlite:///./ursula.db
+INFO:     Application shutdown complete.
+INFO:     Finished server process [193504]

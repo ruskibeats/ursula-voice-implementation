@@ -1,0 +1,9 @@
+[✓] README.md
+[✓] PROMPT.md
+[✓] ssml_guide.js
+[✓] GUIDE.md
+[✓] src/templates/TASK_TEMPLATES.md
+[✓] docs/REFINEMENTS.md
+[✓] src/templates/EMOTIONAL_PATTERNS.md
+[✓] src/templates/SITUATIONAL_TEMPLATES.md
+[✓] docs/BEST_PRACTICES.md

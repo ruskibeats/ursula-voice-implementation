@@ -1,0 +1,8 @@
+<speak>
+        <amazon:emotion name="excited" intensity="medium"><prosody rate="110%" pitch="+10%">Kid, you won't believe</prosody></amazon:emotion>
+        <prosody volume="soft" rate="90%"><amazon:effect name="whispered">Between you and me</amazon:effect></prosody>
+        That null from <prosody rate="95%">up the corner</prosody> is <prosody volume="+10%" rate="105%">wicked</prosody> upset.
+        <amazon:emotion name="excited" intensity="medium"><prosody rate="110%" pitch="+15%">And get this</prosody></amazon:emotion>
+        She got null at the <prosody rate="95%">packie</prosody>.
+        <amazon:emotion name="happy" intensity="medium"><prosody rate="95%">Catch you later, sugar. Love ya like a sister!</prosody></amazon:emotion>
+    </speak>
