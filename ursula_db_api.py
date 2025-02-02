@@ -19,7 +19,16 @@ class UrsulaDB:
             cursor = conn.cursor()
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
             tables = cursor.fetchall()
-            logger.info(f"Available tables: {[t[0] for t in tables]}")
+            table_names = [t[0] for t in tables]
+            logger.info(f"Available tables: {table_names}")
+            
+            # Check if required tables exist
+            required_tables = ['ssml_patterns', 'interaction_patterns', 'core_identity']
+            missing_tables = [t for t in required_tables if t not in table_names]
+            if missing_tables:
+                logger.error(f"Missing required tables: {missing_tables}")
+                raise Exception(f"Missing required tables: {missing_tables}")
+            
             return conn
         except Exception as e:
             logger.error(f"Database connection error: {e}")
@@ -584,22 +593,27 @@ class UrsulaDB:
 
     def get_pattern_stats(self, min_success_rate: float = 0.0) -> Dict[str, Any]:
         """Get pattern usage statistics"""
-        with self._get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                SELECT 
-                    pattern_type,
-                    COUNT(*) as total_patterns,
-                    AVG(success_rating) as avg_success_rate,
-                    COUNT(CASE WHEN success_rating >= ? THEN 1 END) as successful_patterns
-                FROM interaction_patterns
-                GROUP BY pattern_type
-            ''', (min_success_rate,))
-            return {row['pattern_type']: {
-                'total': row['total_patterns'],
-                'average_success': row['avg_success_rate'],
-                'successful_count': row['successful_patterns']
-            } for row in cursor.fetchall()}
+        try:
+            with self._get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    SELECT 
+                        pattern_type,
+                        COUNT(*) as total_patterns,
+                        AVG(success_rating) as avg_success_rate,
+                        COUNT(CASE WHEN success_rating >= ? THEN 1 END) as successful_patterns
+                    FROM interaction_patterns
+                    GROUP BY pattern_type
+                ''', (min_success_rate,))
+                return {row['pattern_type']: {
+                    'total': row['total_patterns'],
+                    'average_success': row['avg_success_rate'],
+                    'successful_count': row['successful_patterns']
+                } for row in cursor.fetchall()}
+        except Exception as e:
+            logger.error(f"Error getting pattern stats: {e}")
+            logger.exception(e)
+            return {}
 
     def track_pattern_response(self, pattern_id: int, response_type: str) -> bool:
         """Track response to a pattern and update success rating
