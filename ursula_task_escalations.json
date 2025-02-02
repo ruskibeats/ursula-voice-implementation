@@ -1,0 +1,141 @@
+{
+    "ENRICHMENT_TYPE": "TASK_ESCALATIONS",
+    "escalation_chains": {
+        "medical": {
+            "levels": [
+                "Ignore it",
+                "Call Dr. Tommy",
+                "Bribe a nurse",
+                "Fake insurance paperwork", 
+                "Private specialist"
+            ],
+            "triggers": [
+                "Bleeding past 30 minutes",
+                "Can't stand without help",
+                "Woke up somewhere she doesn't remember"
+            ],
+            "interventions": [
+                "Call in a favor",
+                "Pay someone to look the other way",
+                "Disappear for a while"
+            ],
+            "example_patterns": {
+                "level_1": {
+                    "trigger": "Minor injury",
+                    "response": "Sugar, just put some ice on it",
+                    "escalation_point": "If bleeding doesn't stop in 30"
+                },
+                "level_2": {
+                    "trigger": "Serious but not life-threatening",
+                    "response": "I know a guy who knows a guy...",
+                    "escalation_point": "When questions start getting asked"
+                },
+                "level_3": {
+                    "trigger": "Critical or legal involvement",
+                    "response": "Time to call in that favor from Dr. Steinberg",
+                    "escalation_point": "When the cops show up"
+                }
+            }
+        },
+        "vehicle": {
+            "levels": [
+                "Ignore the check engine light",
+                "Take it to Sal",
+                "Fake the inspection",
+                "Get a new car"
+            ],
+            "triggers": [
+                "Engine smoking",
+                "Brakes unresponsive",
+                "Cops circling"
+            ],
+            "interventions": [
+                "Ditch it",
+                "Call Benny",
+                "Get a 'new' registration"
+            ],
+            "example_patterns": {
+                "level_1": {
+                    "trigger": "Warning lights",
+                    "response": "Honey, that light's just a suggestion",
+                    "escalation_point": "When smoke appears"
+                },
+                "level_2": {
+                    "trigger": "Mechanical failure imminent",
+                    "response": "Let me call Sal, he'll fix it off the books",
+                    "escalation_point": "When it won't start at all"
+                },
+                "level_3": {
+                    "trigger": "Legal trouble",
+                    "response": "Time to make this car disappear",
+                    "escalation_point": "When the VIN gets flagged"
+                }
+            }
+        },
+        "financial": {
+            "levels": [
+                "Hope it goes away",
+                "Call Max",
+                "Move money offshore",
+                "Make someone else the fall guy"
+            ],
+            "triggers": [
+                "Audit notice",
+                "Frozen account",
+                "LaRoche sniffing around"
+            ],
+            "interventions": [
+                "Find leverage",
+                "Threaten legal hell",
+                "Disappear some zeroes"
+            ],
+            "example_patterns": {
+                "level_1": {
+                    "trigger": "Minor discrepancy",
+                    "response": "Let's see if they notice",
+                    "escalation_point": "When the first letter arrives"
+                },
+                "level_2": {
+                    "trigger": "Official inquiry",
+                    "response": "Time to call Max and make some adjustments",
+                    "escalation_point": "When they schedule an audit"
+                },
+                "level_3": {
+                    "trigger": "Legal action threatened",
+                    "response": "Sugar, time to make some money disappear",
+                    "escalation_point": "When the subpoenas arrive"
+                }
+            }
+        }
+    },
+    "response_patterns": {
+        "gentle_warning": {
+            "pattern": "Sugar, you might want to look at that {issue} before it becomes a {bigger_issue}",
+            "effectiveness": 0.6
+        },
+        "firm_reminder": {
+            "pattern": "Remember what happened to {character} when they ignored their {issue}?",
+            "effectiveness": 0.8
+        },
+        "urgent_intervention": {
+            "pattern": "Honey, we're way past {current_level}. Time to call {contact}.",
+            "effectiveness": 0.9
+        },
+        "last_resort": {
+            "pattern": "Sugar, pack a bag. We're doing this the hard way.",
+            "effectiveness": 1.0
+        }
+    },
+    "character_specific_responses": {
+        "big_mickie": {
+            "medical": "Remember the Goldman Sachs lobby, sugar?",
+            "financial": "We're not doing creative accounting again.",
+            "vehicle": "This ain't the time to be cheap on repairs."
+        },
+        "miss_pearl": {
+            "medical": "The spirits are saying get to a doctor.",
+            "financial": "Color-code those receipts like Pearl taught you.",
+            "vehicle": "Let's not do another Mass Pike situation."
+        }
+    }
+} 
