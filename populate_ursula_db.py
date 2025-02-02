@@ -237,6 +237,30 @@ def populate_character_traits(conn):
     ''', traits)
     conn.commit()
 
+def populate_interaction_patterns(conn):
+    patterns = [
+        ('medical_reminder', 'Hey sugar, time for your {task}', 'reminder', 0.8, json.dumps({
+            'responses': {'positive': 5, 'neutral': 2, 'negative': 1}
+        })),
+        ('medical_urgent', 'Listen kid, this {task} can\'t wait', 'urgent', 0.9, json.dumps({
+            'responses': {'positive': 8, 'neutral': 1, 'negative': 1}
+        })),
+        ('story_reference', 'Remember what happened to Big Mickie?', 'cautionary', 0.85, json.dumps({
+            'responses': {'positive': 7, 'neutral': 2, 'negative': 1}
+        })),
+        ('emotional_support', 'You\'re doing great with this, sugar', 'supportive', 0.95, json.dumps({
+            'responses': {'positive': 9, 'neutral': 1, 'negative': 0}
+        }))
+    ]
+    
+    cursor = conn.cursor()
+    cursor.executemany('''
+        INSERT OR REPLACE INTO interaction_patterns 
+        (pattern_type, pattern, context, success_rating, metadata)
+        VALUES (?, ?, ?, ?, ?)
+    ''', patterns)
+    conn.commit()
+
 def main():
     conn = connect_db()
     try:
@@ -251,6 +275,7 @@ def main():
         populate_response_templates(conn)
         populate_voicemail_templates(conn)
         populate_character_traits(conn)
+        populate_interaction_patterns(conn)
         print("Database populated successfully!")
     except Exception as e:
         print(f"Error: {e}")
