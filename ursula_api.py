@@ -120,12 +120,12 @@ async def build_ssml(request: SSMLRequest):
     """Build SSML markup for text"""
     try:
         logger.info(f"Building SSML for request: {request}")
-        ssml = db.build_ssml(request.text, request.pattern_type, request.pattern_name)
-        if not ssml:
+        result = db.build_ssml(request.text, request.pattern_type, request.pattern_name)
+        if not result:
             logger.warning("Could not build SSML")
             raise HTTPException(status_code=404, detail="Could not build SSML with given parameters")
-        logger.info(f"Built SSML: {ssml}")
-        return {"ssml": ssml}
+        logger.info(f"Built SSML: {result}")
+        return result  # Already in correct format {"ssml": "..."}
     except Exception as e:
         logger.error(f"Error building SSML: {e}")
         logger.exception(e)
