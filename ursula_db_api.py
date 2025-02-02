@@ -180,21 +180,29 @@ class UrsulaDB:
 
     def get_ssml_pattern(self, pattern_type: str, pattern_name: str) -> Optional[Dict]:
         """Get a specific SSML pattern"""
-        with self._get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                SELECT pattern_type, pattern_name, ssml_pattern, description
-                FROM ssml_patterns
-                WHERE pattern_type = ? AND pattern_name = ?
-            ''', (pattern_type, pattern_name))
-            row = cursor.fetchone()
-            if row:
-                return {
-                    'pattern_type': row[0],
-                    'pattern_name': row[1],
-                    'ssml_pattern': row[2],
-                    'description': row[3]
-                }
+        try:
+            logger.info(f"Looking for SSML pattern: type={pattern_type}, name={pattern_name}")
+            with self._get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    SELECT pattern_type, pattern_name, ssml_pattern, description
+                    FROM ssml_patterns
+                    WHERE pattern_type = ? AND pattern_name = ?
+                ''', (pattern_type, pattern_name))
+                row = cursor.fetchone()
+                if row:
+                    logger.info(f"Found pattern: {dict(row)}")
+                    return {
+                        'pattern_type': row[0],
+                        'pattern_name': row[1],
+                        'ssml_pattern': row[2],
+                        'description': row[3]
+                    }
+                logger.warning(f"No pattern found for type={pattern_type}, name={pattern_name}")
+                return None
+        except Exception as e:
+            logger.error(f"Error getting SSML pattern: {e}")
+            logger.exception(e)
             return None
 
     def get_slang_term(self, term: str) -> Optional[Dict]:
