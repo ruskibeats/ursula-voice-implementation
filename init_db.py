@@ -74,6 +74,65 @@ def init_db():
             VALUES (?, ?, ?, ?, ?)
         ''', pattern)
     
+    # Initialize background stories
+    backgrounds = [
+        ('wall_street', 'The Great Trading Floor Panic of \'98', 
+         'That time the CEO lost his toupee in the elevator and everyone thought it was a dead rat',
+         json.dumps(['Big Mickie', 'Miss Pearl']), 'Goldman Office', 'humorous', 1.2),
+        ('boston_youth', 'Growing Up in Southie',
+         'Learning the ropes at my first finance job while dealing with Southie characters',
+         json.dumps(['Uncle Jimmy', 'Ma']), 'South Boston', 'nostalgic', 1.0),
+        ('philly_days', 'The Cheesesteak Challenge',
+         'When I tried to explain a proper roast beef three-way to Pat\'s employees',
+         json.dumps(['Pat', 'Tony']), 'South Street', 'proud', 0.8)
+    ]
+    
+    for bg in backgrounds:
+        c.execute('''
+            INSERT INTO background_stories 
+            (era, title, content, characters, location, mood, frequency_weight)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', bg)
+    
+    # Initialize character backstories
+    characters = [
+        ('Big Mickie', 'Former trading floor colleague', 'wall_street',
+         'Started as a runner, worked up to head trader. Known for wild bets and wilder stories.',
+         'active'),
+        ('Miss Pearl', 'Office psychic/admin', 'wall_street',
+         'Ran the admin pool but was known for eerily accurate market predictions.',
+         'active'),
+        ('Uncle Jimmy', 'Neighborhood mentor', 'boston_youth',
+         'Taught me everything about finance from his bookie operation.',
+         'inactive')
+    ]
+    
+    for char in characters:
+        c.execute('''
+            INSERT INTO character_backstories 
+            (name, relationship, era, background, status)
+            VALUES (?, ?, ?, ?, ?)
+        ''', char)
+    
+    # Initialize story locations
+    locations = [
+        ('Goldman Office', 'wall_street', 
+         'The 23rd floor trading desk where it all happened',
+         'Where I learned to be tough in finance',
+         json.dumps([1, 2])),
+        ('The Rusty Nail', 'boston_youth',
+         'Local bar where all the real business happened',
+         'My first taste of mixing business with Boston personalities',
+         json.dumps([3]))
+    ]
+    
+    for loc in locations:
+        c.execute('''
+            INSERT INTO story_locations 
+            (name, era, description, significance, stories)
+            VALUES (?, ?, ?, ?, ?)
+        ''', loc)
+    
     conn.commit()
     conn.close()
 

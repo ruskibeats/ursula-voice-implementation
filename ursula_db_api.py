@@ -13,11 +13,17 @@ class UrsulaDB:
         
     def _get_connection(self):
         try:
+            logger.info(f"Connecting to database: {self.db_path}")
             conn = sqlite3.connect(self.db_path)
             conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            tables = cursor.fetchall()
+            logger.info(f"Available tables: {[t[0] for t in tables]}")
             return conn
         except Exception as e:
             logger.error(f"Database connection error: {e}")
+            logger.exception(e)
             raise
 
     def get_patterns_by_type(self, pattern_type: str) -> List[Dict[str, Any]]:
@@ -110,17 +116,35 @@ class UrsulaDB:
         try:
             cursor = conn.cursor()
             if trait_type:
+                logger.info(f"Looking for trait type: {trait_type}")
                 cursor.execute(
                     """SELECT trait_type, trait_value, ssml_impact, description
                        FROM character_traits WHERE trait_type = ?""",
                     (trait_type,)
                 )
-            else:
-                cursor.execute("SELECT * FROM core_identity LIMIT 1")
+                row = cursor.fetchone()
+                if row:
+                    logger.info(f"Found trait: {dict(row)}")
+                    return dict(row)
+                logger.info("No specific trait found, falling back to core identity")
+            
+            # If no specific trait type or no result found, return core identity
+            logger.info("Querying core identity")
+            cursor.execute("SELECT * FROM core_identity LIMIT 1")
             row = cursor.fetchone()
-            return dict(row) if row else {}
+            if row:
+                logger.info("Found core identity")
+                result = dict(row)
+                # Parse base_personality JSON if it exists
+                if result.get('base_personality'):
+                    logger.info("Parsing base_personality JSON")
+                    result['base_personality'] = json.loads(result['base_personality'])
+                return result
+            logger.warning("No core identity found")
+            return {}
         except Exception as e:
             logger.error(f"Error getting character traits: {e}")
+            logger.exception(e)
             return {}
         finally:
             conn.close()
@@ -248,34 +272,46 @@ class UrsulaDB:
             } for row in cursor.fetchall()]
 
     def build_ssml(self, text: str, pattern_type: str, pattern_name: str) -> Optional[str]:
-        """Build SSML markup for a given text using a specific pattern"""
-        patterns = self.get_patterns_by_type(pattern_type)
-        if patterns:
-            pattern = next((p for p in patterns if p.get('pattern_name') == pattern_name), patterns[0])
-            return pattern['ssml_pattern'].replace('TEXT', text)
-        return None
+        """Build SSML markup for text using a specific pattern"""
+        try:
+            pattern = self.get_ssml_pattern(pattern_type, pattern_name)
+            if not pattern:
+                return None
+            
+            # Replace $TEXT placeholder with actual text
+            ssml = pattern['ssml_pattern'].replace('$TEXT', text)
+            return ssml
+        except Exception as e:
+            logger.error(f"Error building SSML: {e}")
+            return None
 
     def build_slang_ssml(self, term: str) -> Optional[str]:
         """Build SSML markup for a slang term"""
-        slang = self.get_slang_term(term)
-        if not slang:
+        try:
+            conn = self._get_connection()
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT term, ssml_pattern_type
+                FROM slang_terms
+                WHERE term = ?
+            ''', (term,))
+            row = cursor.fetchone()
+            if not row:
+                return None
+            
+            # Get the appropriate SSML pattern
+            pattern = self.get_ssml_pattern('slang', row['ssml_pattern_type'])
+            if not pattern:
+                return None
+            
+            # Replace $TEXT placeholder with the term
+            ssml = pattern['ssml_pattern'].replace('$TEXT', term)
+            return ssml
+        except Exception as e:
+            logger.error(f"Error building slang SSML: {e}")
             return None
-
-        # Map slang pattern type to SSML pattern
-        pattern_map = {
-            'emphasis': {'type': 'prosody', 'name': 'emphasis'},
-            'casual': {'type': 'prosody', 'name': 'soft'},
-            'excited': {'type': 'emotion', 'name': 'excited'}
-        }
-
-        pattern_info = pattern_map.get(slang['ssml_pattern_type'])
-        if not pattern_info:
-            return None
-
-        pattern = self.get_ssml_pattern(pattern_info['type'], pattern_info['name'])
-        if pattern:
-            return pattern['ssml_pattern'].replace('TEXT', term)
-        return None
+        finally:
+            conn.close()
 
     def get_all_categories(self) -> List[str]:
         """Get all unique slang categories"""
@@ -405,25 +441,25 @@ class UrsulaDB:
 
         return f"<speak>{scene}</speak>"
 
-    def build_character_ssml(self, text: str, emotion: str = None) -> str:
-        """Build SSML with character trait modifications"""
-        traits = self.get_character_trait('voice')
-        base_ssml = text
-
-        # Apply voice traits
-        for trait in traits:
-            if trait['ssml_impact'] and trait['ssml_impact'] != 'none':
-                impact_type, impact_value = trait['ssml_impact'].split(':')
-                param_name, param_value = impact_value.split('=')
-                base_ssml = f"<prosody {param_name}='{param_value}'>{base_ssml}</prosody>"
-
-        # Apply emotion if specified
-        if emotion:
-            emotion_pattern = self.get_ssml_pattern('emotion', emotion)
-            if emotion_pattern:
-                base_ssml = emotion_pattern['ssml_pattern'].replace('TEXT', base_ssml)
-
-        return base_ssml
+    def build_character_ssml(self, text: str, emotion: str) -> Optional[str]:
+        """Build character-specific SSML markup"""
+        try:
+            # Get character's base voice pattern
+            core = self.get_character_trait()
+            if not core:
+                return None
+            
+            # Get emotion pattern
+            pattern = self.get_ssml_pattern('emotion', emotion)
+            if not pattern:
+                return None
+            
+            # Combine character voice with emotion
+            ssml = pattern['ssml_pattern'].replace('$TEXT', text)
+            return ssml
+        except Exception as e:
+            logger.error(f"Error building character SSML: {e}")
+            return None
 
     def get_recent_memories(self, category: str, limit: int = 5) -> List[Dict[str, Any]]:
         """Get recent memories by category"""
@@ -599,6 +635,75 @@ class UrsulaDB:
             return False
         finally:
             conn.close()
+
+    def get_response_templates(self, template_type: str) -> List[Dict[str, Any]]:
+        """Get all response templates of a specific type"""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT template_type, template_name, ssml_pattern, description
+                FROM response_templates
+                WHERE template_type = ?
+            ''', (template_type,))
+            return [{
+                'template_type': row[0],
+                'template_name': row[1],
+                'ssml_pattern': row[2],
+                'description': row[3]
+            } for row in cursor.fetchall()]
+
+    def get_specific_template(self, template_type: str, template_name: str) -> Optional[Dict[str, Any]]:
+        """Get a specific response template"""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT template_type, template_name, ssml_pattern, description
+                FROM response_templates
+                WHERE template_type = ? AND template_name = ?
+            ''', (template_type, template_name))
+            row = cursor.fetchone()
+            if row:
+                return {
+                    'template_type': row[0],
+                    'template_name': row[1],
+                    'ssml_pattern': row[2],
+                    'description': row[3]
+                }
+            return None
+
+    def get_voicemail_template(self, template_name: str) -> Optional[Dict[str, Any]]:
+        """Get a specific voicemail template"""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT template_type, template_name, ssml_content, description
+                FROM voicemail_templates
+                WHERE template_name = ?
+            ''', (template_name,))
+            row = cursor.fetchone()
+            if row:
+                return {
+                    'template_type': row[0],
+                    'template_name': row[1],
+                    'ssml_content': row[2],
+                    'description': row[3]
+                }
+            return None
+
+    def get_all_voicemail_templates(self) -> List[Dict[str, Any]]:
+        """Get all voicemail templates"""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT template_type, template_name, ssml_content, description
+                FROM voicemail_templates
+            ''')
+            return [{
+                'template_type': row[0],
+                'template_name': row[1],
+                'ssml_content': row[2],
+                'description': row[3]
+            } for row in cursor.fetchall()]
 
 # Example usage:
 if __name__ == "__main__":

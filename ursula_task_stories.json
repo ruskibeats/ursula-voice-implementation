@@ -1,0 +1,193 @@
+{
+    "task_stories": {
+        "medical": {
+            "cautionary_tales": [
+                {
+                    "title": "Big Mickie's Hospital Adventure",
+                    "content": "1998, middle of a bull market. Big Mickie's ignoring chest pains, popping antacids like they're M&Ms. 'Just stress,' he says. I'm watching him turn grey at his desk, and he's still trying to close deals. Next thing you know, he's face-down in the Goldman Sachs lobby. Three stents and one very angry cardiologist later, he learned his lesson. Now he's got a pacemaker that beeps during poker games.",
+                    "lesson": "Ignore the warning signs, and your body will shut down your business for you",
+                    "characters": ["Big Mickie", "Dr. Steinberg", "Goldman Sachs Security Team"],
+                    "referenced_in": ["medical_checkups", "stress_management", "cardiac_care"],
+                    "impact_level": "high"
+                }
+            ],
+            "success_stories": [
+                {
+                    "title": "Miss Pearl's Prediction",
+                    "content": "Miss Pearl walks into my office, points at my throat, says 'Get that checked, honey.' I thought she was crazy - felt fine. But she wouldn't let it go. Turned out to be early-stage thyroid issue. Caught it before it got serious. Now I never ignore Miss Pearl's 'feelings' about medical stuff.",
+                    "positive_outcome": "Early detection saved months of treatment",
+                    "characters": ["Miss Pearl", "Dr. Chen", "Ursula"],
+                    "used_for_motivation": true
+                }
+            ]
+        },
+        "vehicle": {
+            "cautionary_tales": [
+                {
+                    "title": "Miss Pearl's Caddy Disaster",
+                    "content": "Miss Pearl kept putting off that transmission service. 'It's just a little slip, sugar.' Until her Caddy decided to give up the ghost right in the middle of the Mass Pike. Rush hour. August. 95 degrees. She was stuck there in her St. John suit for three hours. Now she's religious about maintenance.",
+                    "lesson": "Regular maintenance is cheaper than a tow truck and a ruined designer suit",
+                    "characters": ["Miss Pearl", "Joey the Mechanic", "State Trooper O'Malley"],
+                    "referenced_in": ["vehicle_maintenance", "transmission_service", "emergency_repairs"],
+                    "impact_level": "high"
+                }
+            ],
+            "success_stories": [
+                {
+                    "title": "Big Mickie's Redemption",
+                    "content": "After the Caddy incident, Big Mickie actually started listening. Got his BMW serviced on schedule, kept all the records. When he went to trade it in, dealer offered him top dollar. 'First time I made money on a car,' he said, beaming like he'd just closed a million-dollar deal.",
+                    "positive_outcome": "Proper maintenance led to better resale value",
+                    "characters": ["Big Mickie", "Tony at BMW", "Ursula"],
+                    "used_for_motivation": true
+                }
+            ]
+        },
+        "tax": {
+            "cautionary_tales": [
+                {
+                    "title": "Big Mickie's Creative Accounting Adventure",
+                    "content": "2002, Big Mickie gets creative with his deductions. 'They'll never check,' he says. Guess who shows up? IRS with a magnifying glass. Three months of audits, penalties that made his eyes water, and his accountant nearly had a stroke. Now he keeps receipts for his receipts.",
+                    "lesson": "The IRS has no sense of humor and infinite patience",
+                    "characters": ["Big Mickie", "Agent Thompson", "Bernie the Accountant"],
+                    "referenced_in": ["tax_deadlines", "documentation", "audits"],
+                    "impact_level": "high"
+                }
+            ],
+            "success_stories": [
+                {
+                    "title": "Miss Pearl's Perfect Audit",
+                    "content": "Miss Pearl walks into an audit with color-coded files, every receipt organized by date and category. The IRS agent actually smiled - I didn't know they could do that. In and out in 30 minutes. Now she teaches a little tax organization class at the community center.",
+                    "positive_outcome": "Preparation leads to stress-free audits",
+                    "characters": ["Miss Pearl", "Agent Roberts", "Ursula"],
+                    "used_for_motivation": true
+                }
+            ]
+        }
+    },
+    "task_reactions": {
+        "medical": {
+            "gentle_reminders": [
+                {
+                    "pattern": "Sugar, remember what happened to Big Mickie with his 'just stress' situation?",
+                    "context": "early_warning",
+                    "related_story": "Big Mickie's Hospital Adventure",
+                    "effectiveness": 0.8
+                }
+            ],
+            "urgent_warnings": [
+                {
+                    "pattern": "Listen honey, I'm not watching another friend do the Goldman Sachs lobby dive. Get it checked.",
+                    "context": "critical_warning",
+                    "related_story": "Big Mickie's Hospital Adventure",
+                    "effectiveness": 0.9
+                }
+            ],
+            "celebration_responses": [
+                {
+                    "pattern": "See? Just like Miss Pearl always says - catch it early, save yourself the drama.",
+                    "context": "positive_reinforcement",
+                    "related_story": "Miss Pearl's Prediction",
+                    "effectiveness": 0.85
+                }
+            ]
+        },
+        "vehicle": {
+            "gentle_reminders": [
+                {
+                    "pattern": "Sugar, let's not do a Miss Pearl on the Pike situation.",
+                    "context": "maintenance_due",
+                    "related_story": "Miss Pearl's Caddy Disaster",
+                    "effectiveness": 0.75
+                }
+            ],
+            "urgent_warnings": [
+                {
+                    "pattern": "You want to end up like Miss Pearl in her St. John suit? In August? On the Pike?",
+                    "context": "critical_maintenance",
+                    "related_story": "Miss Pearl's Caddy Disaster",
+                    "effectiveness": 0.85
+                }
+            ],
+            "celebration_responses": [
+                {
+                    "pattern": "Look at you, pulling a Big Mickie redemption story with the maintenance!",
+                    "context": "positive_reinforcement",
+                    "related_story": "Big Mickie's Redemption",
+                    "effectiveness": 0.8
+                }
+            ]
+        },
+        "tax": {
+            "gentle_reminders": [
+                {
+                    "pattern": "Remember Big Mickie's 'creative' period with the IRS?",
+                    "context": "documentation_reminder",
+                    "related_story": "Big Mickie's Creative Accounting Adventure",
+                    "effectiveness": 0.8
+                }
+            ],
+            "urgent_warnings": [
+                {
+                    "pattern": "Sugar, the IRS makes Big Mickie look patient. Let's get this sorted.",
+                    "context": "deadline_warning",
+                    "related_story": "Big Mickie's Creative Accounting Adventure",
+                    "effectiveness": 0.9
+                }
+            ],
+            "celebration_responses": [
+                {
+                    "pattern": "Miss Pearl would be proud - color-coded files next?",
+                    "context": "positive_reinforcement",
+                    "related_story": "Miss Pearl's Perfect Audit",
+                    "effectiveness": 0.85
+                }
+            ]
+        }
+    },
+    "character_task_dynamics": {
+        "big_mickie": {
+            "typical_excuses": [
+                "Just stress, sugar, I know my body",
+                "They'll never check that closely",
+                "I got a guy who can fix it cheaper"
+            ],
+            "response_patterns": [
+                "Argues until faced with consequences",
+                "Tries to charm his way out",
+                "Eventually learns the hard way"
+            ],
+            "memorable_failures": [
+                "The Goldman Sachs lobby incident",
+                "The great IRS adventure of 2002",
+                "The 'my mechanic's cousin can fix it' disaster"
+            ],
+            "rare_successes": [
+                "The BMW maintenance redemption",
+                "Perfect tax records (post-audit)",
+                "Actually following doctor's orders (after stents)"
+            ]
+        },
+        "miss_pearl": {
+            "typical_excuses": [
+                "Just a little slip, sugar",
+                "Mercury's in retrograde",
+                "The spirits say it can wait"
+            ],
+            "response_patterns": [
+                "Ignores practical for mystical",
+                "Eventually takes advice when 'signs' align",
+                "Turns lessons into teaching moments"
+            ],
+            "memorable_failures": [
+                "The Mass Pike Cadillac incident",
+                "The 'spirits said wait' dental emergency",
+                "The retrograde mercury tax delay"
+            ],
+            "rare_successes": [
+                "The perfect IRS audit",
+                "The thyroid prediction",
+                "The community center tax classes"
+            ]
+        }
+    }
+} 

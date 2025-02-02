@@ -8,6 +8,14 @@ import json
 import databases
 import sqlalchemy
 from sqlalchemy import create_engine
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Database setup
 DATABASE_URL = "sqlite:///./ursula.db"
@@ -131,13 +139,26 @@ async def build_scene(request: SceneRequest):
         raise HTTPException(status_code=404, detail=f"Could not build scene with template: {request.template_name}")
     return {"ssml": scene}
 
+@app.get("/api/ursula/character/traits")
 @app.get("/api/ursula/character/traits/{trait_type}")
 async def get_character_traits(trait_type: Optional[str] = None):
     """Get character traits"""
-    traits = db.get_character_trait(trait_type)
-    if not traits:
-        raise HTTPException(status_code=404, detail=f"No traits found for type: {trait_type}")
-    return traits
+    try:
+        logger.info(f"Getting character traits. trait_type={trait_type}")
+        traits = db.get_character_trait(trait_type)
+        logger.info(f"Retrieved traits: {traits}")
+        if not traits:
+            if trait_type:
+                logger.warning(f"No traits found for type: {trait_type}")
+                raise HTTPException(status_code=404, detail=f"No traits found for type: {trait_type}")
+            else:
+                logger.warning("No core identity found")
+                raise HTTPException(status_code=404, detail="No core identity found")
+        return traits
+    except Exception as e:
+        logger.error(f"Error getting character traits: {str(e)}")
+        logger.exception(e)
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/ursula/phrases/{phrase_type}")
 async def get_required_phrases(phrase_type: str):
@@ -226,6 +247,38 @@ async def track_pattern_response(request: PatternResponseRequest):
     if not success:
         raise HTTPException(status_code=500, detail="Failed to track pattern response")
     return {"status": "success"}
+
+@app.get("/api/ursula/templates/{template_type}")
+async def get_response_templates(template_type: str):
+    """Get response templates by type"""
+    templates = db.get_response_templates(template_type)
+    if not templates:
+        raise HTTPException(status_code=404, detail=f"No templates found for type: {template_type}")
+    return templates
+
+@app.get("/api/ursula/templates/{template_type}/{template_name}")
+async def get_specific_template(template_type: str, template_name: str):
+    """Get a specific response template"""
+    template = db.get_specific_template(template_type, template_name)
+    if not template:
+        raise HTTPException(status_code=404, detail=f"Template not found: {template_type}/{template_name}")
+    return template
+
+@app.get("/api/ursula/voicemail/templates/{template_name}")
+async def get_voicemail_template(template_name: str):
+    """Get a specific voicemail template"""
+    template = db.get_voicemail_template(template_name)
+    if not template:
+        raise HTTPException(status_code=404, detail=f"Voicemail template not found: {template_name}")
+    return template
+
+@app.get("/api/ursula/voicemail/templates")
+async def get_all_voicemail_templates():
+    """Get all voicemail templates"""
+    templates = db.get_all_voicemail_templates()
+    if not templates:
+        raise HTTPException(status_code=404, detail="No voicemail templates found")
+    return templates
 
 if __name__ == "__main__":
     uvicorn.run("ursula_api:app", host="0.0.0.0", port=8080, reload=True) 
