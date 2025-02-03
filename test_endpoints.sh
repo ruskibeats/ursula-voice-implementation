@@ -14,11 +14,14 @@ test_endpoint() {
     local method=${2:-GET}
     local data=$3
     
+    # URL encode the endpoint
+    encoded_endpoint=$(echo "$endpoint" | sed 's/ /%20/g')
+    
     echo -e "\nTesting ${method} ${endpoint}"
     if [ "$method" = "GET" ]; then
-        response=$(curl -s -w "\n%{http_code}" "${BASE_URL}${endpoint}")
+        response=$(curl -s -w "\n%{http_code}" "${BASE_URL}${encoded_endpoint}")
     else
-        response=$(curl -s -w "\n%{http_code}" -X ${method} "${BASE_URL}${endpoint}" -H "Content-Type: application/json" -d "${data}")
+        response=$(curl -s -w "\n%{http_code}" -X ${method} "${BASE_URL}${encoded_endpoint}" -H "Content-Type: application/json" -d "${data}")
     fi
     
     status_code=$(echo "$response" | tail -n1)
@@ -33,31 +36,30 @@ test_endpoint() {
     fi
 }
 
-# Memory Endpoints
-test_endpoint "/api/ursula/memory/relationships/russ"
-test_endpoint "/api/ursula/memory/stories/medical"
-test_endpoint "/api/ursula/memory/recent/medical"
+# Test Relationships
+echo -e "\n=== Testing Relationships ==="
+test_endpoint "/api/ursula/memory/relationships/Russ"
+test_endpoint "/api/ursula/memory/relationships/Charlotte"
+test_endpoint "/api/ursula/memory/relationships/Big%20Mickie"
 
-# Pattern Endpoints
+# Test Stories
+echo -e "\n=== Testing Stories ==="
+test_endpoint "/api/ursula/memory/stories/medical_warning"
+test_endpoint "/api/ursula/memory/stories/responsibility"
+
+# Test Patterns
+echo -e "\n=== Testing Patterns ==="
 test_endpoint "/api/ursula/patterns/emotion"
-test_endpoint "/api/ursula/patterns/successful/greeting"
-test_endpoint "/api/ursula/stats/patterns"
+test_endpoint "/api/ursula/patterns/prosody"
+test_endpoint "/api/ursula/patterns/break"
+test_endpoint "/api/ursula/patterns/character"
+test_endpoint "/api/ursula/patterns/effect"
 
-# Character Endpoints
-test_endpoint "/api/ursula/character/traits"
-test_endpoint "/api/ursula/character/traits/voice"
+# Test Templates
+echo -e "\n=== Testing Templates ==="
+test_endpoint "/api/ursula/voicemail/templates/medical_urgent"
+test_endpoint "/api/ursula/voicemail/templates/general_update"
 
-# Story Endpoints
-test_endpoint "/api/ursula/stories/favorite"
-
-# Template Endpoints
-test_endpoint "/api/ursula/templates/greeting"
-test_endpoint "/api/ursula/voicemail/templates"
-
-# SSML Endpoints
-test_endpoint "/api/ursula/ssml/build" "POST" '{"text": "Hello", "pattern_type": "greeting", "pattern_name": "casual"}'
-test_endpoint "/api/ursula/slang/build" "POST" '{"term": "wicked"}'
-
-# Interaction History
-test_endpoint "/api/ursula/memory/interactions/russ"
-
+# Test SSML Build
+echo -e "\n=== Testing SSML Build ==="
+test_endpoint "/api/ursula/ssml/build" "POST" '{"text": "Hello", "pattern_type": "emotion", "pattern_name": "caring"}'
