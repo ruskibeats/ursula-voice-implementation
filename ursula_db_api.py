@@ -732,6 +732,53 @@ class UrsulaDB:
                 'description': row[3]
             } for row in cursor.fetchall()]
 
+    def get_romantic_relationship(self, name: str) -> Optional[Dict[str, Any]]:
+        """Get romantic relationship data"""
+        conn = self._get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT * FROM romantic_relationships WHERE name = ?",
+                (name,)
+            )
+            row = cursor.fetchone()
+            if row:
+                result = dict(row)
+                if result.get('interaction_history'):
+                    result['interaction_history'] = json.loads(result['interaction_history'])
+                if result.get('locations'):
+                    result['locations'] = json.loads(result['locations'])
+                return result
+            return None
+        except Exception as e:
+            logger.error(f"Error getting romantic relationship: {e}")
+            return None
+        finally:
+            conn.close()
+
+    def get_romantic_stories(self, category: str) -> List[Dict[str, Any]]:
+        """Get romantic stories by category"""
+        conn = self._get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT * FROM romantic_stories WHERE category = ?",
+                (category,)
+            )
+            rows = cursor.fetchall()
+            results = []
+            for row in rows:
+                story = dict(row)
+                if story.get('characters'):
+                    story['characters'] = json.loads(story['characters'])
+                results.append(story)
+            return results
+        except Exception as e:
+            logger.error(f"Error getting romantic stories: {e}")
+            return []
+        finally:
+            conn.close()
+
 # Example usage:
 if __name__ == "__main__":
     db = UrsulaDB()

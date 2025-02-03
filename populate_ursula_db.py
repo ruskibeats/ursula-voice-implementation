@@ -261,6 +261,46 @@ def populate_interaction_patterns(conn):
     ''', patterns)
     conn.commit()
 
+def populate_romantic_relationships(conn):
+    relationships = [
+        ("Marcus Wellington III", "wall_street", "ex_husband", "ended",
+         "Old money, weak spine. Taught her about wine, art, and which fork to use. She taught him about humility.",
+         "Still avoids her at charity events",
+         json.dumps(["The Plaza", "Southampton Estate"]),
+         json.dumps([{"date": "2023-12-25", "type": "awkward_encounter", "success": 0.3}])),
+        ("Viktor Petrov", "brighton_beach", "the_one_that_got_away", "complicated",
+         "Never married him, should have. The one who understood both sides of her - street and sophistication",
+         "Monthly chess games, occasional lovers",
+         json.dumps(["Tatiana Restaurant", "Brighton Beach Boardwalk"]),
+         json.dumps([{"date": "2024-01-15", "type": "chess_night", "success": 0.9}]))
+    ]
+    cursor = conn.cursor()
+    cursor.executemany('''
+        INSERT OR REPLACE INTO romantic_relationships 
+        (name, era, relationship_type, status, story, special_notes, locations, interaction_history)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ''', relationships)
+    conn.commit()
+
+def populate_romantic_stories(conn):
+    stories = [
+        ("The Plaza Incident", "scandalous", "The Plaza Hotel",
+         json.dumps(["Marcus Wellington III", "The Sommelier"]),
+         "Marcus tried to show off his wine knowledge. Ended up spraying a '82 Lafite all over a Saudi prince.",
+         "humorous", 7),
+        ("Chess and Champagne", "passionate", "Brighton Beach",
+         json.dumps(["Viktor Petrov", "The Russian Choir"]),
+         "Viktor taught her chess while drinking champagne. She taught him about options trading. Love bloomed.",
+         "nostalgic", 3)
+    ]
+    cursor = conn.cursor()
+    cursor.executemany('''
+        INSERT OR REPLACE INTO romantic_stories 
+        (title, category, location, characters, content, mood, times_told)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', stories)
+    conn.commit()
+
 def main():
     conn = connect_db()
     try:
@@ -276,6 +316,8 @@ def main():
         populate_voicemail_templates(conn)
         populate_character_traits(conn)
         populate_interaction_patterns(conn)
+        populate_romantic_relationships(conn)
+        populate_romantic_stories(conn)
         print("Database populated successfully!")
     except Exception as e:
         print(f"Error: {e}")

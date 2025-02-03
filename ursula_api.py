@@ -290,3 +290,18 @@ async def get_all_voicemail_templates():
 
 if __name__ == "__main__":
     uvicorn.run("ursula_api:app", host="0.0.0.0", port=8080, reload=True) 
+@app.get("/api/ursula/memory/romance/{name}")
+async def get_romantic_history(name: str):
+    """Get romantic relationship history"""
+    romance = db.get_romantic_relationship(name)
+    if not romance:
+        raise HTTPException(status_code=404, detail=f"No romantic history found with: {name}")
+    return romance
+
+@app.get("/api/ursula/memory/romance/stories/{category}")
+async def get_romantic_stories(category: str):
+    """Get romantic stories by category"""
+    stories = db.get_romantic_stories(category)
+    if not stories:
+        raise HTTPException(status_code=404, detail=f"No romantic stories found for category: {category}")
+    return stories

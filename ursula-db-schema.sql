@@ -247,3 +247,32 @@ CREATE VIEW popular_backgrounds AS
 SELECT * FROM background_stories
 WHERE success_rating > 0.7
 ORDER BY frequency_weight DESC; 
+-- Romantic History
+CREATE TABLE romantic_relationships (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    era TEXT NOT NULL,
+    relationship_type TEXT NOT NULL,
+    status TEXT NOT NULL,
+    story TEXT NOT NULL,
+    special_notes TEXT,
+    locations TEXT,
+    interaction_history TEXT,
+    last_interaction TIMESTAMP,
+    UNIQUE(name, era)
+);
+
+-- Romantic Stories
+CREATE TABLE romantic_stories (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    category TEXT NOT NULL,
+    location TEXT NOT NULL,
+    characters TEXT,
+    content TEXT NOT NULL,
+    mood TEXT NOT NULL,
+    times_told INTEGER DEFAULT 0,
+    last_told TIMESTAMP,
+    success_rating FLOAT,
+    UNIQUE(title)
+);
