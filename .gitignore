@@ -23,3 +23,6 @@ __pycache__/
 # IDE files
 .vscode/
 .idea/
+*.pyc
+__pycache__/
+*.db
