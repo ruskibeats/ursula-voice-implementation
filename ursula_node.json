@@ -1,0 +1,101 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "toolDescription": "Get relationship info for a person",
+        "url": "http://192.168.0.63:8080/api/ursula/memory/relationships/{person}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [380, -200],
+      "name": "get_relationship",
+      "id": "relationship-node"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get stories by category and optional mood",
+        "url": "http://192.168.0.63:8080/api/ursula/memory/stories/{category}",
+        "options": {
+          "queryParameters": {
+            "mood": "={{$parameter.mood}}"
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [380, -100],
+      "name": "get_stories",
+      "id": "stories-node"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get voice patterns by type",
+        "url": "http://192.168.0.63:8080/api/ursula/patterns/{pattern_type}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [380, 0],
+      "name": "get_patterns",
+      "id": "patterns-node"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Build SSML response",
+        "url": "http://192.168.0.63:8080/api/ursula/ssml/build",
+        "method": "POST",
+        "options": {
+          "body": {
+            "text": "={{$parameter.text}}",
+            "pattern_type": "={{$parameter.pattern_type}}",
+            "pattern_name": "={{$parameter.pattern_name}}"
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [380, 100],
+      "name": "build_ssml",
+      "id": "ssml-node"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Store new memory",
+        "url": "http://192.168.0.63:8080/api/ursula/memory/store",
+        "method": "POST",
+        "options": {
+          "body": {
+            "category": "={{$parameter.category}}",
+            "content": "={{$parameter.content}}",
+            "context": "={{$parameter.context}}"
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [380, 200],
+      "name": "store_memory",
+      "id": "memory-node"
+    }
+  ],
+  "connections": {
+    "get_relationship": {
+      "ai_tool": [[]]
+    },
+    "get_stories": {
+      "ai_tool": [[]]
+    },
+    "get_patterns": {
+      "ai_tool": [[]]
+    },
+    "build_ssml": {
+      "ai_tool": [[]]
+    },
+    "store_memory": {
+      "ai_tool": [[]]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ursula-api-instance"
+  }
+} 

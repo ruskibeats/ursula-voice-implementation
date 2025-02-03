@@ -1,6 +1,45 @@
-# Ursula Voice Implementation
+# Ursula AI Voice Assistant
 
-A FastAPI-based voice personality system that manages Ursula's character voice, SSML patterns, and interaction memory. The system tracks pattern effectiveness and adapts responses based on success rates.
+An AI-powered voice assistant that creates medical update voicemails using ElevenLabs TTS.
+
+## Overview
+
+Ursula is a Boston native and former Wall Street trader who manages medical care. The system:
+1. Gathers context about relationships and medical history
+2. Generates personalized voicemails with financial metaphors
+3. Converts text to speech using ElevenLabs
+
+## Components
+
+- `ursula_ai_prompt.md`: Main character prompt and message structure
+- `message_payload.json`: Generated message for ElevenLabs
+- n8n workflow for orchestration
+
+## Workflow
+
+1. AI Agent (Claude) gathers context using:
+   - Relationship data
+   - Medical stories
+   - Voice patterns
+   
+2. Generates structured message with:
+   - Urgent Opening (excited)
+   - Medical Update (disappointed)
+   - Doctor's Report (whispered)
+   - Action Plan (confident)
+   - Sisterly Support (caring)
+
+3. ElevenLabs TTS with:
+   - Voice: YaV3QA3tFtOjK6vTFDWl
+   - Model: eleven_multilingual_v2
+   - Optimized voice settings
+
+## Technical Details
+
+- SSML for voice pacing
+- Boston accent and Wall Street metaphors
+- Character limit: 4000
+- JSON payload format
 
 ## N8N Integration
 

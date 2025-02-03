@@ -42,7 +42,7 @@ class UrsulaDB:
             cursor.execute('''
                 SELECT pattern_type, pattern, context, success_rating, metadata
                 FROM interaction_patterns 
-                WHERE pattern_type = ? AND success_rating > 0.7
+                WHERE LOWER(pattern_type) = LOWER(?) AND success_rating > 0.7
                 ORDER BY last_used DESC
             ''', (pattern_type,))
             return [dict(row) for row in cursor.fetchall()]
@@ -53,11 +53,12 @@ class UrsulaDB:
             conn.close()
 
     def get_relationship(self, person: str) -> Optional[Dict[str, Any]]:
+        """Get relationship data for a person"""
         conn = self._get_connection()
         try:
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT * FROM relationships WHERE person_name = ?",
+                "SELECT * FROM relationships WHERE LOWER(person_name) = LOWER(?)",
                 (person,)
             )
             row = cursor.fetchone()
@@ -69,13 +70,15 @@ class UrsulaDB:
             conn.close()
 
     def get_stories(self, category: str, mood: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Get stories by category and optional mood"""
+        category = self.resolve_category_alias(category, 'stories')
         conn = self._get_connection()
         try:
             cursor = conn.cursor()
-            query = "SELECT * FROM stories WHERE category = ?"
+            query = "SELECT * FROM stories WHERE LOWER(category) = LOWER(?)"
             params = [category]
             if mood:
-                query += " AND mood = ?"
+                query += " AND LOWER(mood) = LOWER(?)"
                 params.append(mood)
             cursor.execute(query, params)
             return [dict(row) for row in cursor.fetchall()]
@@ -738,7 +741,7 @@ class UrsulaDB:
         try:
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT * FROM romantic_relationships WHERE name = ?",
+                "SELECT * FROM romantic_relationships WHERE LOWER(name) = LOWER(?)",
                 (name,)
             )
             row = cursor.fetchone()
@@ -762,7 +765,7 @@ class UrsulaDB:
         try:
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT * FROM romantic_stories WHERE category = ?",
+                "SELECT * FROM romantic_stories WHERE LOWER(category) = LOWER(?)",
                 (category,)
             )
             rows = cursor.fetchall()
@@ -778,6 +781,248 @@ class UrsulaDB:
             return []
         finally:
             conn.close()
+
+    def get_task_locations(self, category: str) -> List[Dict[str, Any]]:
+        """Get task locations by category"""
+        category = self.resolve_category_alias(category, 'task_locations')
+        conn = self._get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT * FROM task_locations WHERE LOWER(category) = LOWER(?)",
+                (category,)
+            )
+            return [dict(row) for row in cursor.fetchall()]
+        except Exception as e:
+            logger.error(f"Error getting task locations: {e}")
+            return []
+        finally:
+            conn.close()
+
+    def get_task_priorities(self, level: str) -> Optional[Dict[str, Any]]:
+        """Get task priority by level"""
+        level = self.resolve_category_alias(level, 'task_priorities')
+        conn = self._get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT * FROM task_priorities WHERE LOWER(level) = LOWER(?)",
+                (level,)
+            )
+            row = cursor.fetchone()
+            return dict(row) if row else None
+        except Exception as e:
+            logger.error(f"Error getting task priority: {e}")
+            return None
+        finally:
+            conn.close()
+
+    def resolve_category_alias(self, alias: str, table_name: str) -> str:
+        """Resolve a category alias to its canonical form"""
+        conn = self._get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                """SELECT canonical_category FROM category_aliases 
+                   WHERE LOWER(alias) = LOWER(?) AND table_name = ?""",
+                (alias, table_name)
+            )
+            row = cursor.fetchone()
+            return row['canonical_category'] if row else alias
+        except Exception as e:
+            logger.error(f"Error resolving category alias: {e}")
+            return alias
+        finally:
+            conn.close()
+
+    def get_routines(self, routine_type: str) -> Optional[List[Dict[str, Any]]]:
+        """
+        Get daily routines by type.
+        
+        Args:
+            routine_type (str): Type of routine (e.g., morning_ritual, power_moves)
+            
+        Returns:
+            List of routines with time, activity, location, quirks, frequency, importance_rating
+            or None if no routines found
+        """
+        cursor = self._get_connection().cursor()
+        cursor.execute('''
+            SELECT time, activity, location, quirks, frequency, importance_rating 
+            FROM daily_routines 
+            WHERE LOWER(routine_type) = LOWER(?)
+            ORDER BY time
+        ''', (routine_type,))
+        routines = cursor.fetchall()
+        if not routines:
+            return None
+        return [{"time": r[0], "activity": r[1], "location": r[2], 
+                 "quirks": json.loads(r[3]), "frequency": r[4], 
+                 "importance_rating": r[5]} for r in routines]
+
+    def get_rules(self, context: str) -> Optional[List[Dict[str, Any]]]:
+        """
+        Get personal rules by context.
+        
+        Args:
+            context (str): Rule context (e.g., gambling, business, power)
+            
+        Returns:
+            List of rules with rule text, origin story, importance rating
+            or None if no rules found
+        """
+        cursor = self._get_connection().cursor()
+        cursor.execute('''
+            SELECT rule, origin_story, importance_rating 
+            FROM personal_rules 
+            WHERE LOWER(context) LIKE '%' || LOWER(?) || '%'
+            ORDER BY importance_rating DESC
+        ''', (context,))
+        rules = cursor.fetchall()
+        if not rules:
+            return None
+        return [{"rule": r[0], "origin_story": r[1], 
+                 "importance_rating": r[2]} for r in rules]
+
+    def get_skills(self, proficiency: str) -> Optional[List[Dict[str, Any]]]:
+        """
+        Get secret skills by proficiency level.
+        
+        Args:
+            proficiency (str): Skill proficiency level (e.g., expert)
+            
+        Returns:
+            List of skills with skill name, origin story, reveal frequency
+            or None if no skills found
+        """
+        cursor = self._get_connection().cursor()
+        cursor.execute('''
+            SELECT skill, origin_story, reveal_frequency 
+            FROM secret_skills 
+            WHERE LOWER(proficiency_level) = LOWER(?)
+            ORDER BY reveal_frequency
+        ''', (proficiency,))
+        skills = cursor.fetchall()
+        if not skills:
+            return None
+        return [{"skill": s[0], "origin_story": s[1], 
+                 "reveal_frequency": s[2]} for s in skills]
+
+    def get_vulnerabilities(self) -> Optional[List[Dict[str, Any]]]:
+        """
+        Get all vulnerabilities.
+        
+        Returns:
+            List of vulnerabilities with trigger, reaction, background, coping mechanism
+            or None if no vulnerabilities found
+        """
+        cursor = self._get_connection().cursor()
+        cursor.execute('''
+            SELECT trigger, reaction, background, coping_mechanism 
+            FROM vulnerabilities
+            ORDER BY trigger
+        ''')
+        vulns = cursor.fetchall()
+        if not vulns:
+            return None
+        return [{"trigger": v[0], "reaction": v[1], 
+                 "background": v[2], "coping_mechanism": v[3]} for v in vulns]
+
+    def get_haunts(self, city: str, time_of_day: str) -> Optional[List[Dict[str, Any]]]:
+        """
+        Get regular haunts by city and time of day.
+        
+        Args:
+            city (str): City name (e.g., boston, new york)
+            time_of_day (str): Time of day (morning, afternoon, evening)
+            
+        Returns:
+            List of locations with purpose, frequency, special notes
+            or None if no haunts found
+        """
+        cursor = self._get_connection().cursor()
+        cursor.execute('''
+            SELECT location, purpose, frequency, special_notes 
+            FROM regular_haunts 
+            WHERE LOWER(city) = LOWER(?) AND LOWER(time_of_day) = LOWER(?)
+            ORDER BY frequency DESC
+        ''', (city, time_of_day))
+        haunts = cursor.fetchall()
+        if not haunts:
+            return None
+        return [{"location": h[0], "purpose": h[1], 
+                 "frequency": h[2], "special_notes": h[3]} for h in haunts]
+
+    def get_traits(self, city: str) -> Optional[List[Dict[str, Any]]]:
+        """
+        Get regional traits by city.
+        
+        Args:
+            city (str): City name (e.g., boston, new york)
+            
+        Returns:
+            List of traits with context, manifestation, frequency
+            or None if no traits found
+        """
+        cursor = self._get_connection().cursor()
+        cursor.execute('''
+            SELECT trait, context, manifestation, frequency 
+            FROM regional_traits 
+            WHERE LOWER(city) = LOWER(?)
+            ORDER BY frequency DESC
+        ''', (city,))
+        traits = cursor.fetchall()
+        if not traits:
+            return None
+        return [{"trait": t[0], "context": t[1], 
+                 "manifestation": t[2], "frequency": t[3]} for t in traits]
+
+    def get_dreams(self, dream_type: str) -> Optional[List[Dict[str, Any]]]:
+        """
+        Get future dreams by type.
+        
+        Args:
+            dream_type (str): Dream type (admitted, secret)
+            
+        Returns:
+            List of dreams with progress status and related actions
+            or None if no dreams found
+        """
+        cursor = self._get_connection().cursor()
+        cursor.execute('''
+            SELECT dream, progress_status, related_actions 
+            FROM future_dreams 
+            WHERE LOWER(type) = LOWER(?)
+            ORDER BY progress_status
+        ''', (dream_type,))
+        dreams = cursor.fetchall()
+        if not dreams:
+            return None
+        return [{"dream": d[0], "progress_status": d[1], 
+                 "related_actions": json.loads(d[2])} for d in dreams]
+
+    def get_pleasures(self, frequency: str) -> Optional[List[Dict[str, Any]]]:
+        """
+        Get guilty pleasures by frequency.
+        
+        Args:
+            frequency (str): Frequency of indulgence (weekly, monthly)
+            
+        Returns:
+            List of pleasures with secrecy level
+            or None if no pleasures found
+        """
+        cursor = self._get_connection().cursor()
+        cursor.execute('''
+            SELECT pleasure, secrecy_level 
+            FROM guilty_pleasures 
+            WHERE LOWER(frequency) = LOWER(?)
+            ORDER BY secrecy_level DESC
+        ''', (frequency,))
+        pleasures = cursor.fetchall()
+        if not pleasures:
+            return None
+        return [{"pleasure": p[0], "secrecy_level": p[1]} for p in pleasures]
 
 # Example usage:
 if __name__ == "__main__":

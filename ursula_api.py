@@ -29,8 +29,31 @@ engine = create_engine(
 metadata.create_all(engine)
 
 app = FastAPI(
-    title="Ursula API",
-    description="API for Ursula's voice, memory, and personality",
+    title="Ursula Voice API",
+    description="""
+    API for Ursula's voice personality system. Provides SSML patterns, story integration, and character voice building.
+    
+    ## Character Voice
+    Ursula is a tough-loving Boston native with a half-pack-a-day voice and heart of gold. She manages Russ's tasks for Charlotte,
+    blending Wall Street smarts with street-wise intuition.
+    
+    ## Response Structure
+    A typical Ursula response follows this pattern:
+    1. Opening (concerned): "Hey Charlotte, sugar..."
+    2. Situation (disappointed): Task status and delays
+    3. Story Reference (serious): Past experiences
+    4. Private Info (whispered): Sensitive details
+    5. Action Plan (confident): Next steps
+    6. Closing (caring): Support and encouragement
+    
+    ## SSML Patterns
+    - concerned: For worried updates about Russ
+    - disappointed: For task delays and letdowns
+    - serious: For important messages
+    - whispered: For private asides
+    - confident: For action plans
+    - caring: For supportive moments
+    """,
     version="1.0.0"
 )
 
@@ -46,6 +69,18 @@ db = UrsulaDB()
 
 # Request Models
 class SSMLRequest(BaseModel):
+    """
+    Build SSML markup for text using specific emotion patterns.
+    
+    Example:
+    ```json
+    {
+        "text": "Hey Charlotte, sugar. I've got some news about Russ's medical screening.",
+        "pattern_type": "emotion",
+        "pattern_name": "concerned"
+    }
+    ```
+    """
     text: str
     pattern_type: str
     pattern_name: str
@@ -117,7 +152,33 @@ async def store_memory(request: MemoryRequest):
 
 @app.post("/api/ursula/ssml/build")
 async def build_ssml(request: SSMLRequest):
-    """Build SSML markup for text"""
+    """
+    Build SSML markup for text using character voice patterns.
+    
+    Available Patterns:
+    - concerned: <amazon:emotion name="disappointed" intensity="medium"><prosody rate="95%">$TEXT</prosody></amazon:emotion>
+    - disappointed: <amazon:emotion name="disappointed" intensity="medium"><prosody pitch="-10%" rate="95%">$TEXT</prosody></amazon:emotion>
+    - serious: <amazon:emotion name="serious" intensity="medium"><prosody pitch="-5%" rate="90%">$TEXT</prosody></amazon:emotion>
+    - whispered: <prosody volume="soft" rate="90%"><amazon:effect name="whispered">$TEXT</amazon:effect></prosody>
+    - confident: <amazon:emotion name="excited" intensity="medium"><prosody rate="+5%" pitch="+10%">$TEXT</prosody></amazon:emotion>
+    - caring: <amazon:emotion name="happy" intensity="low"><prosody volume="soft" rate="95%">$TEXT</prosody></amazon:emotion>
+    
+    Example Request:
+    ```json
+    {
+        "text": "Hey Charlotte, sugar. I've got some news about Russ's medical screening.",
+        "pattern_type": "emotion",
+        "pattern_name": "concerned"
+    }
+    ```
+    
+    Example Response:
+    ```json
+    {
+        "ssml": "<amazon:emotion name=\"disappointed\" intensity=\"medium\"><prosody rate=\"95%\">Hey Charlotte, sugar. I've got some news about Russ's medical screening.</prosody></amazon:emotion>"
+    }
+    ```
+    """
     try:
         logger.info(f"Building SSML for request: {request}")
         result = db.build_ssml(request.text, request.pattern_type, request.pattern_name)
@@ -125,7 +186,7 @@ async def build_ssml(request: SSMLRequest):
             logger.warning("Could not build SSML")
             raise HTTPException(status_code=404, detail="Could not build SSML with given parameters")
         logger.info(f"Built SSML: {result}")
-        return result  # Already in correct format {"ssml": "..."}
+        return result
     except Exception as e:
         logger.error(f"Error building SSML: {e}")
         logger.exception(e)
@@ -288,8 +349,6 @@ async def get_all_voicemail_templates():
         raise HTTPException(status_code=404, detail="No voicemail templates found")
     return templates
 
-if __name__ == "__main__":
-    uvicorn.run("ursula_api:app", host="0.0.0.0", port=8080, reload=True) 
 @app.get("/api/ursula/memory/romance/{name}")
 async def get_romantic_history(name: str):
     """Get romantic relationship history"""
@@ -305,3 +364,242 @@ async def get_romantic_stories(category: str):
     if not stories:
         raise HTTPException(status_code=404, detail=f"No romantic stories found for category: {category}")
     return stories
+
+# Task System Routes
+@app.get("/api/ursula/tasks/locations/{category}")
+async def get_task_locations(category: str):
+    """Get task locations by category"""
+    locations = db.get_task_locations(category)
+    if not locations:
+        raise HTTPException(status_code=404, detail=f"No locations found for category: {category}")
+    return locations
+
+@app.get("/api/ursula/tasks/characters/{category}")
+async def get_task_characters(category: str):
+    """Get task characters by category"""
+    characters = db.get_task_characters(category)
+    if not characters:
+        raise HTTPException(status_code=404, detail=f"No characters found for category: {category}")
+    return characters
+
+@app.get("/api/ursula/tasks/escalations/{category}/{level}")
+async def get_task_escalations(category: str, level: int):
+    """Get task escalation by category and level"""
+    escalation = db.get_task_escalations(category, level)
+    if not escalation:
+        raise HTTPException(status_code=404, detail=f"No escalation found for category {category} level {level}")
+    return escalation
+
+@app.get("/api/ursula/tasks/priorities/{level}")
+async def get_task_priority(level: str):
+    """Get task priority by level"""
+    priority = db.get_task_priorities(level)
+    if not priority:
+        raise HTTPException(status_code=404, detail=f"No priority found for level: {level}")
+    return priority
+
+@app.get("/api/ursula/routines/{routine_type}")
+async def get_routines(routine_type: str):
+    """
+    Get daily routines by type.
+    
+    Args:
+        routine_type (str): Type of routine (e.g., morning_ritual, power_moves)
+        
+    Returns:
+        List of routines with time, activity, location, quirks, frequency, importance_rating
+        
+    Example Response:
+        [
+            {
+                "time": "5:30 AM",
+                "activity": "Black coffee",
+                "location": "Thinking Cup",
+                "quirks": ["Always sits at same corner table", "Tips in crisp hundreds"],
+                "frequency": "daily",
+                "importance_rating": 0.9
+            }
+        ]
+    """
+    routines = db.get_routines(routine_type)
+    if not routines:
+        raise HTTPException(status_code=404, detail=f"No routines found for type: {routine_type}")
+    return routines
+
+@app.get("/api/ursula/rules/{context}")
+async def get_rules(context: str):
+    """
+    Get personal rules by context.
+    
+    Args:
+        context (str): Rule context (e.g., gambling, business, power)
+        
+    Returns:
+        List of rules with rule text, origin story, importance rating
+        
+    Example Response:
+        [
+            {
+                "rule": "Never bet what you can't lose twice",
+                "origin_story": "Learned after first Wall Street crash",
+                "importance_rating": 0.9
+            }
+        ]
+    """
+    rules = db.get_rules(context)
+    if not rules:
+        raise HTTPException(status_code=404, detail=f"No rules found for context: {context}")
+    return rules
+
+@app.get("/api/ursula/skills/{proficiency}")
+async def get_skills(proficiency: str):
+    """
+    Get secret skills by proficiency level.
+    
+    Args:
+        proficiency (str): Skill proficiency level (e.g., expert)
+        
+    Returns:
+        List of skills with skill name, origin story, reveal frequency
+        
+    Example Response:
+        [
+            {
+                "skill": "Expert lockpick",
+                "origin_story": "Never lost the touch from Southie days",
+                "reveal_frequency": 0.1
+            }
+        ]
+    """
+    skills = db.get_skills(proficiency)
+    if not skills:
+        raise HTTPException(status_code=404, detail=f"No skills found for proficiency: {proficiency}")
+    return skills
+
+@app.get("/api/ursula/vulnerabilities")
+async def get_vulnerabilities():
+    """
+    Get all vulnerabilities.
+    
+    Returns:
+        List of vulnerabilities with trigger, reaction, background, coping mechanism
+        
+    Example Response:
+        [
+            {
+                "trigger": "Mother's disappearance",
+                "reaction": "Goes quiet, orders double scotch",
+                "background": "Never solved, still pays private investigators",
+                "coping_mechanism": "Drowns in work"
+            }
+        ]
+    """
+    vulns = db.get_vulnerabilities()
+    if not vulns:
+        raise HTTPException(status_code=404, detail="No vulnerabilities found")
+    return vulns
+
+@app.get("/api/ursula/haunts/{city}/{time_of_day}")
+async def get_haunts(city: str, time_of_day: str):
+    """
+    Get regular haunts by city and time of day.
+    
+    Args:
+        city (str): City name (e.g., boston, new york)
+        time_of_day (str): Time of day (morning, afternoon, evening)
+        
+    Returns:
+        List of locations with purpose, frequency, special notes
+        
+    Example Response:
+        [
+            {
+                "location": "Thinking Cup Coffee",
+                "purpose": "Daily ritual",
+                "frequency": "daily",
+                "special_notes": "Her unofficial office"
+            }
+        ]
+    """
+    haunts = db.get_haunts(city, time_of_day)
+    if not haunts:
+        raise HTTPException(status_code=404, detail=f"No haunts found for {city} at {time_of_day}")
+    return haunts
+
+@app.get("/api/ursula/traits/{city}")
+async def get_traits(city: str):
+    """
+    Get regional traits by city.
+    
+    Args:
+        city (str): City name (e.g., boston, new york)
+        
+    Returns:
+        List of traits with context, manifestation, frequency
+        
+    Example Response:
+        [
+            {
+                "trait": "Black coffee",
+                "context": "Drinking habits",
+                "manifestation": "Strong, no sugar, judgmental of fancy coffee",
+                "frequency": 0.9
+            }
+        ]
+    """
+    traits = db.get_traits(city)
+    if not traits:
+        raise HTTPException(status_code=404, detail=f"No traits found for city: {city}")
+    return traits
+
+@app.get("/api/ursula/dreams/{dream_type}")
+async def get_dreams(dream_type: str):
+    """
+    Get future dreams by type.
+    
+    Args:
+        dream_type (str): Dream type (admitted, secret)
+        
+    Returns:
+        List of dreams with progress status and related actions
+        
+    Example Response:
+        [
+            {
+                "dream": "Opening a high-stakes poker room",
+                "progress_status": "in progress",
+                "related_actions": ["Scouting locations", "Building investor list"]
+            }
+        ]
+    """
+    dreams = db.get_dreams(dream_type)
+    if not dreams:
+        raise HTTPException(status_code=404, detail=f"No dreams found for type: {dream_type}")
+    return dreams
+
+@app.get("/api/ursula/pleasures/{frequency}")
+async def get_pleasures(frequency: str):
+    """
+    Get guilty pleasures by frequency.
+    
+    Args:
+        frequency (str): Frequency of indulgence (weekly, monthly)
+        
+    Returns:
+        List of pleasures with secrecy level
+        
+    Example Response:
+        [
+            {
+                "pleasure": "Trashy reality TV",
+                "secrecy_level": 4
+            }
+        ]
+    """
+    pleasures = db.get_pleasures(frequency)
+    if not pleasures:
+        raise HTTPException(status_code=404, detail=f"No pleasures found for frequency: {frequency}")
+    return pleasures
+
+if __name__ == "__main__":
+    uvicorn.run("ursula_api:app", host="0.0.0.0", port=8080, reload=True)

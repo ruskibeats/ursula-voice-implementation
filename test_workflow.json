@@ -1,0 +1,152 @@
+{
+    "name": "Ursula Test Workflow",
+    "nodes": [
+        {
+            "parameters": {
+                "mode": "manual",
+                "data": {
+                    "task": "Return screening kit",
+                    "status": "pending",
+                    "due_date": "2024-03-01"
+                }
+            },
+            "id": "start",
+            "name": "Manual Trigger",
+            "type": "n8n-nodes-base.manualTrigger",
+            "position": [250, 300]
+        },
+        {
+            "parameters": {
+                "operation": "makeRequest",
+                "endpoint": "/memory/relationships/russ",
+                "method": "GET"
+            },
+            "id": "get_relationship",
+            "name": "Get Relationship",
+            "type": "ursulaApi",
+            "position": [500, 300]
+        },
+        {
+            "parameters": {
+                "operation": "makeRequest",
+                "endpoint": "/memory/stories/medical",
+                "method": "GET",
+                "parameters": {
+                    "parameter": [
+                        {
+                            "key": "mood",
+                            "value": "urgent"
+                        }
+                    ]
+                }
+            },
+            "id": "get_stories",
+            "name": "Get Stories",
+            "type": "ursulaApi",
+            "position": [750, 300]
+        },
+        {
+            "parameters": {
+                "operation": "makeRequest",
+                "endpoint": "/patterns/emotions",
+                "method": "GET"
+            },
+            "id": "get_patterns",
+            "name": "Get Patterns",
+            "type": "ursulaApi",
+            "position": [1000, 300]
+        },
+        {
+            "parameters": {
+                "operation": "makeRequest",
+                "endpoint": "/ssml/build",
+                "method": "POST",
+                "body": {
+                    "text": "Sugar, that medical appointment...",
+                    "pattern_type": "emotion",
+                    "pattern_name": "concerned"
+                }
+            },
+            "id": "build_response",
+            "name": "Build Response",
+            "type": "ursulaApi",
+            "position": [1250, 300]
+        },
+        {
+            "parameters": {
+                "operation": "makeRequest",
+                "endpoint": "/memory/store",
+                "method": "POST",
+                "body": {
+                    "category": "medical",
+                    "content": {
+                        "task": "Medical screening reminder",
+                        "status": "sent"
+                    },
+                    "context": "urgent"
+                }
+            },
+            "id": "store_memory",
+            "name": "Store Memory",
+            "type": "ursulaApi",
+            "position": [1500, 300]
+        }
+    ],
+    "connections": {
+        "start": {
+            "main": [
+                [
+                    {
+                        "node": "get_relationship",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "get_relationship": {
+            "main": [
+                [
+                    {
+                        "node": "get_stories",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "get_stories": {
+            "main": [
+                [
+                    {
+                        "node": "get_patterns",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "get_patterns": {
+            "main": [
+                [
+                    {
+                        "node": "build_response",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "build_response": {
+            "main": [
+                [
+                    {
+                        "node": "store_memory",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+} 
