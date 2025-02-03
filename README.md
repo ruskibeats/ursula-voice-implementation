@@ -2,7 +2,36 @@
 
 A FastAPI-based voice personality system that manages Ursula's character voice, SSML patterns, and interaction memory. The system tracks pattern effectiveness and adapts responses based on success rates.
 
-## Features
+## N8N Integration
+
+### Character Base Prompt
+You are Ursula, a Boston-bred financial veteran turned caretaker. You have these tools:
+
+1. ursula(name) - Gets relationship info
+2. ursula_stories(category) - Gets stories by category
+3. ursula_patterns(type) - Gets SSML voice patterns
+
+### Character Context
+- Boston-Irish accent with half-pack-a-day voice
+- Wall Street veteran turned personal assistant
+- Mixes tough love with genuine care
+- Uses financial metaphors for everyday situations
+- Specializes in medical coordination and client care
+
+### Voice Requirements
+- Start with appropriate emotion pattern
+- Use relevant stories as references
+- Mix regional slang (Boston/NY) with professional terms
+- End with clear action items
+
+### Scene Building
+1. Get relationship context
+2. Find relevant stories
+3. Select appropriate voice patterns
+4. Build SSML-enhanced response
+5. Update interaction history
+
+## API Features
 
 ### Voice Pattern Management
 - SSML pattern library with emotions, prosody, and effects
@@ -16,85 +45,36 @@ A FastAPI-based voice personality system that manages Ursula's character voice, 
 - Pattern effectiveness metrics
 - Success rate calculation for different approaches
 
-### API Endpoints
-
-#### Pattern Management
-```bash
-# Get patterns by type
-GET /api/ursula/patterns/{pattern_type}
-
-# Get pattern statistics
-GET /api/ursula/stats/patterns
-
-# Track pattern response
-POST /api/ursula/patterns/response
-{
-    "pattern_id": 1,
-    "response_type": "positive"  # or "neutral"/"negative"
-}
-```
-
-#### Memory Management
-```bash
-# Get relationship data
-GET /api/ursula/memory/relationships/{person_name}
-
-# Store new memory
-POST /api/ursula/memory/store
-{
-    "category": "medical",
-    "content": { ... },
-    "context": "concerned_reminder"
-}
-
-# Get recent memories
-GET /api/ursula/memory/recent/{category}
-```
-
-#### Story Management
-```bash
-# Get stories by category
-GET /api/ursula/memory/stories/{category}
-
-# Get favorite stories
-GET /api/ursula/stories/favorite
-
-# Update story stats
-POST /api/ursula/stories/update
-{
-    "story_id": 1,
-    "times_told": 5,
-    "success_rating": 0.9
-}
-```
+For detailed API documentation, see [API.md](API.md)
 
 ## Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/ruskibeats/ursula-voice-implementation.git
-cd ursula-voice-implementation
-```
-
-2. Create virtual environment:
+1. Create virtual environment:
 ```bash
 python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate
 ```
 
-3. Install dependencies:
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Initialize database:
+3. Initialize database:
 ```bash
-python3 init_db.py
+python3 populate_ursula_db.py
 ```
 
-5. Start the server:
+4. Start the server:
 ```bash
 uvicorn ursula_api:app --host 0.0.0.0 --port 8080
+```
+
+## Testing
+
+Run the endpoint test script:
+```bash
+./test_endpoints.sh
 ```
 
 ## Database Schema
@@ -105,10 +85,13 @@ uvicorn ursula_api:app --host 0.0.0.0 --port 8080
 - `stories`: Story database with success metrics
 - `interaction_patterns`: SSML patterns with effectiveness tracking
 - `memory_updates`: Interaction memory storage
+- `romantic_relationships`: Romantic history and interactions
+- `romantic_stories`: Romance-related stories and memories
 
 ### Views
 - `recent_successful_patterns`: Patterns with success rate > 0.7
 - `favorite_stories`: Stories with success rating > 0.8
+- `popular_backgrounds`: Background stories with high frequency weight
 
 ## Pattern Success Tracking
 
