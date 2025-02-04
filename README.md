@@ -1,187 +1,193 @@
-# Ursula AI Voice Assistant
-
-An AI-powered voice assistant that creates medical update voicemails using ElevenLabs TTS.
+# Ursula's Task Management System
 
 ## Overview
+An AI-powered task management system that embodies Ursula O'Sullivan's unique approach to managing family chaos and ADHD challenges. The system combines structured data management with AI-driven contextual enrichment.
 
-Ursula is a Boston native and former Wall Street trader who manages medical care. The system:
-1. Gathers context about relationships and medical history
-2. Generates personalized voicemails with financial metaphors
-3. Converts text to speech using ElevenLabs
+## Server Management
 
-## Components
-
-- `ursula_ai_prompt.md`: Main character prompt and message structure
-- `message_payload.json`: Generated message for ElevenLabs
-- n8n workflow for orchestration
-
-## Workflow
-
-1. AI Agent (Claude) gathers context using:
-   - Relationship data
-   - Medical stories
-   - Voice patterns
-   
-2. Generates structured message with:
-   - Urgent Opening (excited)
-   - Medical Update (disappointed)
-   - Doctor's Report (whispered)
-   - Action Plan (confident)
-   - Sisterly Support (caring)
-
-3. ElevenLabs TTS with:
-   - Voice: YaV3QA3tFtOjK6vTFDWl
-   - Model: eleven_multilingual_v2
-   - Optimized voice settings
-
-## Technical Details
-
-- SSML for voice pacing
-- Boston accent and Wall Street metaphors
-- Character limit: 4000
-- JSON payload format
-
-## N8N Integration
-
-### Character Base Prompt
-You are Ursula, a Boston-bred financial veteran turned caretaker. You have these tools:
-
-1. ursula(name) - Gets relationship info
-2. ursula_stories(category) - Gets stories by category
-3. ursula_patterns(type) - Gets SSML voice patterns
-
-### Character Context
-- Boston-Irish accent with half-pack-a-day voice
-- Wall Street veteran turned personal assistant
-- Mixes tough love with genuine care
-- Uses financial metaphors for everyday situations
-- Specializes in medical coordination and client care
-
-### Voice Requirements
-- Start with appropriate emotion pattern
-- Use relevant stories as references
-- Mix regional slang (Boston/NY) with professional terms
-- End with clear action items
-
-### Scene Building
-1. Get relationship context
-2. Find relevant stories
-3. Select appropriate voice patterns
-4. Build SSML-enhanced response
-5. Update interaction history
-
-## API Features
-
-### Voice Pattern Management
-- SSML pattern library with emotions, prosody, and effects
-- Boston/NY/Philly regional slang integration
-- Dynamic pattern success tracking
-- Automatic adaptation based on response effectiveness
-
-### Memory System
-- Relationship tracking with interaction history
-- Story database with categorization
-- Pattern effectiveness metrics
-- Success rate calculation for different approaches
-
-For detailed API documentation, see [API.md](API.md)
-
-## Installation
-
-1. Create virtual environment:
+### Starting the Server
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+# Start in foreground
+python3 ursula_api.py
+
+# Start in background
+python3 ursula_api.py &
+
+# Start with uvicorn directly
+uvicorn ursula_api:app --host 0.0.0.0 --port 8080 --reload
 ```
 
-2. Install dependencies:
+### Stopping the Server
 ```bash
-pip install -r requirements.txt
+# Graceful shutdown (if running in foreground)
+Ctrl+C
+
+# Kill all Python processes
+pkill -9 python3
+
+# Find and kill specific process
+ps aux | grep "ursula_api.py"
+kill -9 <process_id>
 ```
 
-3. Initialize database:
+### Database Reset
 ```bash
-python3 populate_ursula_db.py
+# Stop server, delete DB, and restart
+pkill -9 python3 && rm -f ursula.db && python3 ursula_api.py
+
+# Clean start (one-liner)
+pkill -9 python3 && rm -f ursula.db && python3 ursula_api.py &
 ```
 
-4. Start the server:
+### Health Check
 ```bash
-uvicorn ursula_api:app --host 0.0.0.0 --port 8080
+# Check if server is running
+curl http://localhost:8080/docs
+
+# Check specific endpoint
+curl http://localhost:8080/universe/family
 ```
 
-## Testing
+## Core Components
 
-Run the endpoint test script:
-```bash
-./test_endpoints.sh
-```
+### 1. Database Structure
+- **Tasks & Metadata**
+  - Core task tracking
+  - Historical interactions
+  - Success patterns
+  - Voice patterns and effectiveness
+  - Relationship impacts
 
-## Database Schema
+- **Learning System**
+  - Task patterns and effectiveness
+  - Family member responses
+  - Time-based patterns
+  - Voice pattern effectiveness
 
-### Core Tables
-- `core_identity`: Base personality traits
-- `relationships`: Person relationships and interaction history
-- `stories`: Story database with success metrics
-- `interaction_patterns`: SSML patterns with effectiveness tracking
-- `memory_updates`: Interaction memory storage
-- `romantic_relationships`: Romantic history and interactions
-- `romantic_stories`: Romance-related stories and memories
+- **Context Management**
+  - Family relationships
+  - Location significance
+  - Historical references
+  - Trust levels
 
-### Views
-- `recent_successful_patterns`: Patterns with success rate > 0.7
-- `favorite_stories`: Stories with success rating > 0.8
-- `popular_backgrounds`: Background stories with high frequency weight
+### 2. AI Enrichment
+- Task contextualization
+- Voice pattern selection
+- Story/anecdote matching
+- Urgency assessment
+- Family impact analysis
 
-## Pattern Success Tracking
+### 3. Voice System
+- SSML patterns for different contexts
+- Mood-based adjustments
+- Family member specific patterns
+- Success tracking
 
-The system tracks pattern effectiveness through:
-1. Response tracking (positive/neutral/negative)
-2. Success rate calculation:
-   ```
-   success_rate = (positive_responses * 1.0 + neutral_responses * 0.5) / total_responses
-   ```
-3. Pattern adaptation based on success rates
-4. Automatic selection of most effective patterns
+## Current State
 
-## SSML Pattern Examples
+### Implemented Features
+- Basic task management
+- Family relationship tracking
+- Voice pattern system
+- Initial AI enrichment
+- Basic learning system
 
-### Emotional Patterns
-```xml
-<!-- Excited greeting -->
-<amazon:emotion name="excited" intensity="medium">
-    <prosody rate="110%" pitch="+10%">
-        Kid, you won't believe what happened!
-    </prosody>
-</amazon:emotion>
+### Database Tables
+- `core_identity`
+- `characters`
+- `locations`
+- `relationships`
+- `tasks`
+- `task_history`
+- `voice_patterns`
+- `family_chaos`
+- `task_effectiveness`
 
-<!-- Concerned reminder -->
-<amazon:emotion name="concerned" intensity="medium">
-    Sugar, that medical appointment is {days} days overdue.
-    We can't have another Big Mickie situation!
-</amazon:emotion>
-```
+## Roadmap
 
-### Regional Slang Integration
-```xml
-<!-- Boston style -->
-<prosody rate="95%" pitch="-5%">
-    What's doin'?
-</prosody>
+### Phase 1: Enhanced Learning
+- [ ] Pattern recognition improvements
+- [ ] Success rate tracking
+- [ ] Voice pattern effectiveness
+- [ ] Family response patterns
 
-<!-- NY influence -->
-<prosody rate="90%" pitch="-10%">
-    You good?
-</prosody>
+### Phase 2: Context Enrichment
+- [ ] Better story matching
+- [ ] Relationship impact tracking
+- [ ] Location significance
+- [ ] Time-based patterns
+
+### Phase 3: Voice System
+- [ ] Dynamic SSML generation
+- [ ] Mood-based adjustments
+- [ ] Family-specific patterns
+- [ ] Success tracking
+
+## API Endpoints
+
+### Task Management
+- `GET /tasks` - List all tasks
+- `GET /tasks/{priority}` - Get tasks by priority
+- `POST /tasks/process` - Process and enrich tasks
+- `GET /tasks/rollcall` - Generate roll call script
+
+### Voice System
+- `GET /voice/patterns/{tag_type}` - Get voice patterns
+- `POST /tasks/ai_enrich` - AI enrichment for tasks
+
+### Family Management
+- `GET /russ/family` - Family chaos patterns
+- `GET /russ/patterns` - ADHD patterns
+- `GET /russ/triggers` - Escalation triggers
+
+## Integration Points
+
+### n8n Workflows
+- Task processing
+- Voice pattern selection
+- Learning system updates
+- Context enrichment
+
+### AI Integration
+- OpenAI for context generation
+- Voice pattern selection
+- Story matching
+- Urgency assessment
+
+## Development
+
+### Prerequisites
+- Python 3.8+
+- PostgreSQL
+- FastAPI
+- n8n
+
+### Setup
+1. Clone repository
+2. Install dependencies: `pip install -r requirements.txt`
+3. Set up PostgreSQL database
+4. Initialize database: `python init_db.py`
+5. Start server: `uvicorn ursula_api:app --reload`
+
+### Environment Variables
+```env
+DATABASE_URL=postgresql://user:pass@localhost:5432/ursula
+AI_API_KEY=your_openai_key
+VOICE_API_KEY=your_voice_api_key
 ```
 
 ## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. Fork repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Create Pull Request
 
 ## License
+MIT License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## Acknowledgments
+- Ursula O'Sullivan character concept
+- FastAPI framework
+- n8n workflow automation
+- OpenAI for AI capabilities
