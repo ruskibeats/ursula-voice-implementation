@@ -1,0 +1,3 @@
+[{"id":1,"category":"Daily Systems","rule":"Keep one paper notebook, one digital","reasoning":"Redundancy is power","importance_level":5,"flexibility_rating":0.2000000000000000111,"last_broken":null},
+{"id":2,"category":"Energy Management","rule":"No more than four serious problems a day","reasoning":"I got limits. Know 'em.","importance_level":5,"flexibility_rating":0.29999999999999998889,"last_broken":null},
+{"id":3,"category":"Network Control","rule":"Never call in a favor you don't need","reasoning":"Debt is leverage. Don't waste it.","importance_level":5,"flexibility_rating":0.10000000000000000555,"last_broken":null}]

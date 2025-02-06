@@ -3,17 +3,59 @@
     "nodes": [
         {
             "parameters": {
-                "mode": "manual",
-                "data": {
-                    "task": "Return screening kit",
-                    "status": "pending",
-                    "due_date": "2024-03-01"
+                "id": "1",
+                "path": "webhook/n8n",
+                "options": {
+                    "allowUnauthorizedCerts": true,
+                    "bodyContentType": "json",
+                    "includeCookies": false,
+                    "timeout": 5000
+                },
+                "url": "http://192.168.0.63:8080/webhook/n8n",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "X-Source",
+                            "value": "n8n"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ]
+                },
+                "sendQuery": false,
+                "responseMode": "lastNode",
+                "responseData": "allEntries",
+                "bodyParametersUi": {
+                    "parameter": [
+                        {
+                            "name": "event_type",
+                            "value": "task_update"
+                        },
+                        {
+                            "name": "data",
+                            "value": {
+                                "results": {
+                                    "id": "={{ $json.id }}",
+                                    "content": "={{ $json.content }}",
+                                    "added": "={{ $json.added }}",
+                                    "tags": "={{ $json.tags }}"
+                                },
+                                "notes": {
+                                    "note": "={{ $json.notes.note }}"
+                                }
+                            }
+                        }
+                    ]
                 }
             },
-            "id": "start",
-            "name": "Manual Trigger",
-            "type": "n8n-nodes-base.manualTrigger",
-            "position": [250, 300]
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [250, 300],
+            "webhookId": "1"
         },
         {
             "parameters": {
@@ -148,5 +190,8 @@
                 ]
             ]
         }
+    },
+    "settings": {
+        "executionOrder": "v1"
     }
 } 

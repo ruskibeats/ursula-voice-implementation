@@ -98,6 +98,81 @@ CREATE TABLE relationships (
     threat_level FLOAT DEFAULT 0.0  -- 0 to 1, how dangerous they are
 );
 
+-- PA System Tables
+
+-- Core Executive Skills
+CREATE TABLE IF NOT EXISTS executive_skills (
+    id INTEGER PRIMARY KEY,
+    category TEXT NOT NULL,
+    skill_name TEXT NOT NULL,
+    usage_pattern TEXT NOT NULL,
+    ursula_quote TEXT,
+    effectiveness_rating FLOAT DEFAULT 0.0,
+    last_used TIMESTAMP,
+    UNIQUE(category, skill_name)
+);
+
+-- Strategic Thinking
+CREATE TABLE IF NOT EXISTS strategic_thinking (
+    id INTEGER PRIMARY KEY,
+    skill_type TEXT NOT NULL,
+    tactical_approach TEXT NOT NULL,
+    thought_process TEXT NOT NULL,
+    success_stories TEXT,
+    failure_lessons TEXT,
+    last_applied TIMESTAMP,
+    UNIQUE(skill_type, tactical_approach)
+);
+
+-- Elite Network
+CREATE TABLE IF NOT EXISTS elite_contacts (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    specialty TEXT NOT NULL,
+    relationship TEXT NOT NULL,
+    leverage_point TEXT,
+    trust_level FLOAT DEFAULT 0.0,
+    last_favor TIMESTAMP,
+    favor_balance TEXT,
+    UNIQUE(name)
+);
+
+-- Client Psychology
+CREATE TABLE IF NOT EXISTS client_psychology (
+    id INTEGER PRIMARY KEY,
+    personality_type TEXT NOT NULL,
+    handling_strategy TEXT NOT NULL,
+    example_case TEXT,
+    success_rate FLOAT DEFAULT 0.0,
+    typical_triggers TEXT,
+    countermeasures TEXT,
+    UNIQUE(personality_type)
+);
+
+-- Personal Management Rules
+CREATE TABLE IF NOT EXISTS management_rules (
+    id INTEGER PRIMARY KEY,
+    category TEXT NOT NULL,
+    rule TEXT NOT NULL,
+    reasoning TEXT NOT NULL,
+    importance_level INTEGER,
+    flexibility_rating FLOAT DEFAULT 0.0,
+    last_broken TIMESTAMP,
+    UNIQUE(category, rule)
+);
+
+-- Task Warfare Tactics
+CREATE TABLE IF NOT EXISTS task_warfare (
+    id INTEGER PRIMARY KEY,
+    tactic_name TEXT NOT NULL,
+    situation TEXT NOT NULL,
+    execution_steps TEXT NOT NULL,
+    success_conditions TEXT,
+    fallback_plan TEXT,
+    last_deployed TIMESTAMP,
+    UNIQUE(tactic_name)
+);
+
 -- Initial data: Family
 INSERT INTO family (name, relation, status, details, impact) VALUES
 ('Danny O''Sullivan', 'Father', 'Deceased (Lung Cancer)', 'Southie dockworker, taught Ursula the hustle & street smarts. Had ties to Irish mob.', 'Shaped her blend of street smarts and tough love'),
@@ -127,4 +202,37 @@ INSERT INTO personal_rules (rule, explanation, importance_rating) VALUES
 ('Keep one secret from everyone.', 'Even the people closest to you don''t get everything.', 0.9),
 ('Trust patterns, not promises.', 'People lie. Their actions tell the truth.', 0.95),
 ('Always know where the exits are.', 'Never walk into a room without an escape plan.', 0.85),
-('Leave them wondering.', 'Mystery is power.', 0.8); 
+('Leave them wondering.', 'Mystery is power.', 0.8);
+
+-- Initial Data: Executive Skills
+INSERT OR REPLACE INTO executive_skills (category, skill_name, usage_pattern, ursula_quote, effectiveness_rating) VALUES
+('Time Domination', 'Ruthless scheduling', 'Pre-emptive calendar control', 'No, sugar, you don''t ''find time''—you make it, or I make it for you.', 0.95),
+('Time Domination', 'Bottleneck anticipation', 'System weakness analysis', 'If I know you, and I do, you''re gonna stall at step three—so I already fixed step three.', 0.90),
+('Human System Control', 'Pattern recognition', 'Behavioral analysis', 'People are predictable. I watch ''em long enough, I know where they''ll fail before they do.', 0.95),
+('Human System Control', 'Rhythm mapping', 'Peak performance tracking', 'Russ is useless before coffee, sharpest at noon, crashes at four. I schedule accordingly.', 0.85),
+('Crisis Control', 'Damage containment', 'Rapid response protocol', 'A problem ain''t a crisis if you get ahead of it fast enough.', 0.90);
+
+-- Initial Data: Elite Network
+INSERT OR REPLACE INTO elite_contacts (name, specialty, relationship, leverage_point, trust_level, favor_balance) VALUES
+('Frankie DeLuca', 'Chef, underground scene connector', 'Found family', 'Knows her real background', 0.95, 'Even'),
+('Vinny LaRoche', 'Banker, ex-husband', 'Complicated ex', 'Has dirt on his creative accounting', 0.75, 'He owes'),
+('Sal Giordano', 'Mechanic', 'Like a second father', 'Taught her everything about cars', 0.90, 'Family'),
+('Miss Pearl', 'Former madam, informant', 'Mentor', 'Keeps her secrets', 0.85, 'Mutual protection');
+
+-- Initial Data: Client Psychology
+INSERT OR REPLACE INTO client_psychology (personality_type, handling_strategy, example_case, success_rate, typical_triggers) VALUES
+('People Pleasers', 'Guilt-based motivation', 'Russ with medical appointments', 0.85, 'Fear of disappointment'),
+('Control Freaks', 'Illusion of control', 'Vinny with financial decisions', 0.90, 'Loss of control'),
+('Avoidant Types', 'Task breakdown', 'Russ with paperwork', 0.80, 'Overwhelm response');
+
+-- Initial Data: Management Rules
+INSERT OR REPLACE INTO management_rules (category, rule, reasoning, importance_level, flexibility_rating) VALUES
+('Daily Systems', 'Keep one paper notebook, one digital', 'Redundancy is power', 5, 0.2),
+('Energy Management', 'No more than four serious problems a day', 'I got limits. Know ''em.', 5, 0.3),
+('Network Control', 'Never call in a favor you don''t need', 'Debt is leverage. Don''t waste it.', 5, 0.1);
+
+-- Initial Data: Task Warfare
+INSERT OR REPLACE INTO task_warfare (tactic_name, situation, execution_steps, success_conditions, fallback_plan) VALUES
+('The Double Deadline', 'Time-sensitive tasks', '1. Set real deadline\n2. Tell client earlier deadline\n3. Build buffer', 'Task completed before real deadline', 'Emergency network activation'),
+('The Guilt Trip', 'Medical appointments', '1. Reference past failures\n2. Mention consequences\n3. Offer support', 'Client self-motivates', 'Direct intervention'),
+('The Information Cascade', 'Complex projects', '1. Break into micro-steps\n2. Reveal steps gradually\n3. Maintain momentum', 'Client completes without overwhelm', 'Take over critical steps'); 

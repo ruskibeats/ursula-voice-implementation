@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Path
+from fastapi import FastAPI, HTTPException, Path, Header, Request, Body, Response
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from enum import Enum
@@ -10,18 +10,150 @@ import os
 from fastapi import Path
 import json
 import httpx
+import uvicorn
+import logging
+import structlog
+import sentry_sdk
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from prometheus_client import Counter, Histogram, CollectorRegistry
+from contextlib import asynccontextmanager
+import time
+from fastapi.responses import JSONResponse
 
 # Constants
 TODOIST_API_TOKEN = os.getenv("TODOIST_API_TOKEN", "e0617c43571f8e13254c5b49c1e561715380461d")
 TODOIST_API_BASE = "https://api.todoist.com/rest/v2"
 DATABASE_URL = "sqlite:///./ursula.db"
 
+# Metrics
+METRICS_REGISTRY = CollectorRegistry()
+REQUEST_COUNT = Counter('ursula_http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'], registry=METRICS_REGISTRY)
+REQUEST_LATENCY = Histogram('ursula_http_request_duration_seconds', 'HTTP request duration in seconds', ['method', 'endpoint'], registry=METRICS_REGISTRY)
+
+# Structured logging setup
+structlog.configure(
+    processors=[
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.JSONRenderer()
+    ]
+)
+logger = structlog.get_logger()
+
+# Sentry setup (if SENTRY_DSN is provided)
+if os.getenv("SENTRY_DSN"):
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN"),
+        integrations=[FastApiIntegration()],
+        traces_sample_rate=0.1,
+        environment=os.getenv("ENVIRONMENT", "production")
+    )
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    logger.info("Starting Ursula's Task Management System...")
+    if not os.path.exists('ursula.db'):
+        init_db()
+    await database.connect()
+    logger.info("Database initialized!")
+    
+    yield
+    
+    # Shutdown
+    logger.info("Shutting down...")
+    await database.disconnect()
+
 # FastAPI app
 app = FastAPI(
     title="Ursula's Task Management System",
-    description="Task management and escalation system",
-    version="1.0.0"
+    description="Production API for Ursula's task management and AI delegation system",
+    version="1.0.0",
+    lifespan=lifespan
 )
+
+# Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.add_middleware(
+    TrustedHostMiddleware, 
+    allowed_hosts=["192.168.0.63", "localhost", "127.0.0.1"]
+)
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+    method = request.method
+    path = request.url.path
+    
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        duration = time.time() - start_time
+        
+        # Update metrics
+        REQUEST_COUNT.labels(method=method, endpoint=path, status=status_code).inc()
+        REQUEST_LATENCY.labels(method=method, endpoint=path).observe(duration)
+        
+        # Structured logging
+        logger.info(
+            "request_processed",
+            method=method,
+            path=path,
+            status_code=status_code,
+            duration=duration
+        )
+        
+        return response
+    except Exception as e:
+        logger.error(
+            "request_failed",
+            method=method,
+            path=path,
+            error=str(e),
+            duration=time.time() - start_time
+        )
+        raise
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    try:
+        await check_db_connection()
+        memory = get_memory_usage()
+        disk = get_disk_space()
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "memory": memory,
+            "disk": disk,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "status": "unhealthy",
+                "error": str(e),
+                "timestamp": datetime.now().isoformat()
+            }
+        )
+
+@app.get("/metrics")
+async def metrics():
+    from prometheus_client import generate_latest
+    return Response(
+        content=generate_latest(METRICS_REGISTRY),
+        media_type="text/plain"
+    )
 
 # Database
 database = databases.Database(DATABASE_URL)
@@ -29,10 +161,10 @@ metadata = sqlalchemy.MetaData()
 
 # Models
 class Priority(str, Enum):
-    RED = "🔥 RED"
-    ORANGE = "🟠 ORANGE"
-    YELLOW = "🟡 YELLOW"
-    GREEN = "🟢 GREEN"
+    RED = "RED"
+    ORANGE = "ORANGE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
 
 class FamilyMember(BaseModel):
     id: int
@@ -132,38 +264,98 @@ class TodoistComment(BaseModel):
     content: str
     posted_at: datetime
 
+# Raw Data Ingestion Models
+class RawDataIngestion(BaseModel):
+    source: str  # email, document, chat, note, etc.
+    content: Dict[str, Any]  # flexible JSON content
+    metadata: Optional[Dict[str, Any]]
+    timestamp: Optional[datetime] = Field(default_factory=datetime.now)
+    context: Optional[str]
+    priority: Optional[str]
+
+# Webhook Models
+class WebhookPayload(BaseModel):
+    event_type: str  # email, todoist, calendar, etc.
+    data: Dict[str, Any]  # raw webhook data
+    timestamp: Optional[datetime] = Field(default_factory=datetime.now)
+    signature: Optional[str]  # webhook signature for verification
+
 # Initialize database
 def init_db():
-    conn = sqlite3.connect('ursula.db')
-    c = conn.cursor()
-    
-    # Read schema files
-    schema_files = [
-        'ursula_universe_schema.sql',
-        'russ_management_schema.sql',
-        'ursula-db-schema.sql'
-    ]
-    
-    for schema_file in schema_files:
-        try:
-            with open(schema_file, 'r') as f:
-                schema = f.read()
+    try:
+        # Initialize database with retries
+        for attempt in range(3):
+            try:
+                conn = sqlite3.connect('ursula.db')
+                c = conn.cursor()
+                
+                # Read and execute schema
+                with open('combined_schema.sql', 'r') as f:
+                    schema = f.read()
                 c.executescript(schema)
-        except Exception as e:
-            print(f"Error executing {schema_file}: {e}")
-    
-    conn.commit()
-    conn.close()
+                
+                # Initialize task roll call with sample data
+                c.execute('''
+                    INSERT INTO task_roll_call (
+                        id, description, category, due_date, last_mentioned,
+                        urgency, suggested_actions, ai_observations, days_overdue,
+                        agent_assigned, status, pattern_score, avoidance_history,
+                        impact_rating, external_pressure_score
+                    ) VALUES (
+                        'TASK101', 'Fix the Car', 'Vehicle', CURRENT_TIMESTAMP,
+                        CURRENT_TIMESTAMP, 'RED', 'Call Sal, schedule pickup',
+                        'Russ avoided twice, pattern detected', 5, 'Logistics_AI',
+                        'pending', 0.8, '["Ignored first call", "Claimed too busy"]',
+                        8, 0.7
+                    )
+                ''')
+                
+                # Initialize daily roll call
+                c.execute('''
+                    INSERT INTO daily_roll_call (
+                        report_date, urgent_tasks, high_priority, low_priority,
+                        ursula_notes, completion_rate
+                    ) VALUES (
+                        DATE('now'),
+                        '["TASK101", "TASK102"]',
+                        '["TASK103"]',
+                        '["TASK104", "TASK105"]',
+                        'Charlotte, sugar, these need handling TODAY.',
+                        0.7
+                    )
+                ''')
+                
+                conn.commit()
+                conn.close()
+                logger.info("Database initialized successfully")
+                break
+            except Exception as e:
+                logger.error(f"Database initialization attempt {attempt + 1} failed", error=str(e))
+                if attempt == 2:
+                    raise
+                time.sleep(1)
+    except Exception as e:
+        logger.error("Database initialization failed", error=str(e))
+        raise
 
-@app.on_event("startup")
-async def startup():
-    if not os.path.exists('ursula.db'):
-        init_db()
-    await database.connect()
+async def check_db_connection():
+    try:
+        conn = sqlite3.connect('ursula.db')
+        c = conn.cursor()
+        c.execute("SELECT 1")
+        conn.close()
+        return True
+    except Exception as e:
+        logger.error("Database connection check failed", error=str(e))
+        return False
 
-@app.on_event("shutdown")
-async def shutdown():
-    await database.disconnect()
+def get_memory_usage():
+    import psutil
+    return psutil.virtual_memory().percent
+
+def get_disk_space():
+    import psutil
+    return psutil.disk_usage('/').free / (1024 * 1024 * 1024)  # Convert to GB
 
 # Core Universe Endpoints
 @app.get("/universe/family", response_model=List[FamilyMember], tags=["Universe"])
@@ -270,7 +462,7 @@ async def get_tasks(priority: Priority):
     Get tasks by priority level.
     
     Parameters:
-    * priority: One of 🔥 RED, 🟠 ORANGE, 🟡 YELLOW, 🟢 GREEN
+    * priority: One of RED, ORANGE, YELLOW, GREEN
     
     Returns tasks ordered by deadline.
     """
@@ -293,30 +485,56 @@ async def get_escalations(type: str):
 @app.get("/tasks", response_model=List[Task], tags=["Tasks"])
 async def get_all_tasks():
     """
-    Get all tasks for Ursula's roll call voicenote to Charlotte.
-    
-    Returns tasks ordered by priority and due date, including:
-    * Task details and deadlines
-    * Ursula's notes for voice recording
-    * Voice patterns to use
+    Get all tasks ordered by priority and due date
     """
-    query = """
-    SELECT *, 
-        CASE 
-            WHEN labels LIKE '%urgent%' THEN '🔥 RED'
-            WHEN due_date <= date('now', '+7 days') THEN '🟠 ORANGE'
-            WHEN due_date <= date('now', '+14 days') THEN '🟡 YELLOW'
-            ELSE '🟢 GREEN'
-        END as priority_level,
-        CASE
-            WHEN labels LIKE '%urgent%' THEN 'concerned'
-            WHEN labels LIKE '%Newsletter%' THEN 'formal'
-            ELSE 'casual'
-        END as voice_pattern
-    FROM tasks 
-    ORDER BY priority_level ASC, due_date ASC, task_order ASC
-    """
-    return await database.fetch_all(query)
+    try:
+        query = """
+        SELECT 
+            id,
+            content,
+            description,
+            is_completed,
+            labels,
+            docid,
+            due_date,
+            comments,
+            task_order,
+            ursula_notes,
+            voice_pattern,
+            last_reviewed,
+            charlotte_notified,
+            priority_level
+        FROM tasks 
+        ORDER BY 
+            CASE priority_level 
+                WHEN 'RED' THEN 1 
+                WHEN 'ORANGE' THEN 2 
+                WHEN 'YELLOW' THEN 3 
+                WHEN 'GREEN' THEN 4 
+                ELSE 5 
+            END,
+            due_date
+        """
+        tasks = await database.fetch_all(query)
+        return [
+            Task(
+                id=str(task['id']),
+                content=task['content'],
+                description=task['description'],
+                is_completed=bool(task['is_completed']),
+                labels=json.loads(task['labels']) if task['labels'] else [],
+                docid=task['docid'],
+                due_date=task['due_date'],
+                comments=task['comments'],
+                task_order=task['task_order'],
+                ursula_notes=task['ursula_notes'],
+                voice_pattern=task['voice_pattern'],
+                priority_level=task['priority_level']
+            )
+            for task in tasks
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tasks/subtasks/{task_id}", tags=["Tasks"])
 async def get_task_subtasks(task_id: str):
@@ -354,7 +572,7 @@ async def complete_task(task_id: str):
     return {"message": "Task marked as completed"}
 
 @app.put("/tasks/{task_id}/notes", tags=["Tasks"])
-async def update_task_notes(task_id: str, notes: str):
+async def update_task_notes(task_id: str, notes: str = Body(..., embed=True)):
     """
     Update Ursula's notes for the roll call voicenote.
     
@@ -365,10 +583,14 @@ async def update_task_notes(task_id: str, notes: str):
     """
     query = """
     UPDATE tasks 
-    SET ursula_notes = :notes
+    SET ursula_notes = :notes,
+        last_reviewed = CURRENT_TIMESTAMP
     WHERE id = :task_id
+    RETURNING id
     """
-    await database.execute(query, {"task_id": task_id, "notes": notes})
+    result = await database.execute(query, {"task_id": task_id, "notes": notes})
+    if not result:
+        raise HTTPException(status_code=404, detail="Task not found")
     return {"message": "Task notes updated"}
 
 @app.post("/tasks/process", tags=["Tasks"])
@@ -396,7 +618,7 @@ async def process_tasks():
                 days_until_due = (due_date - datetime.now()).days
                 
                 if days_until_due < -3:
-                    status = "🔥 Overdue"
+                    status = "RED Overdue"
                     is_urgent = True
                 elif days_until_due <= -1:
                     status = "⚠️ Critical"
@@ -547,13 +769,17 @@ async def get_rollcall_script():
             "description": "Successfully retrieved voice patterns",
             "content": {
                 "application/json": {
-                    "example": [{
-                        "name": "excited",
-                        "ssml": "<amazon:emotion name=\"excited\" intensity=\"high\"><prosody rate=\"+10%\" pitch=\"+20%\">$TEXT</prosody></amazon:emotion>",
-                        "use_case": "Good news or urgent updates",
-                        "examples": ["Hey sugar, you won't believe this!", "Drop everything, I got news!"],
-                        "tag_type": "emotions"
-                    }]
+                    "examples": {
+                        "excited": {
+                            "value": {
+                                "name": "excited",
+                                "ssml": "<amazon:emotion name=\"excited\" intensity=\"high\"><prosody rate=\"+10%\" pitch=\"+20%\">$TEXT</prosody></amazon:emotion>",
+                                "use_case": "Good news or urgent updates",
+                                "examples": ["Hey sugar, you won't believe this!", "Drop everything, I got news!"],
+                                "tag_type": "emotions"
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -562,8 +788,7 @@ async def get_voice_patterns(
     tag_type: str = Path(
         ..., 
         description="Type of voice pattern to retrieve",
-        example="emotions",
-        enum=["emotions", "prosody", "breaks", "character"]
+        examples=["emotions", "prosody", "breaks", "character"]
     )
 ):
     """
@@ -823,92 +1048,78 @@ async def import_from_todoist_with_comments():
     """
     Import tasks and comments from Todoist API directly
     """
-    async with httpx.AsyncClient() as client:
-        # Get tasks
-        tasks_response = await client.get(
-            f"{TODOIST_API_BASE}/tasks",
-            headers={"Authorization": f"Bearer {TODOIST_API_TOKEN}"}
-        )
-        tasks = tasks_response.json()
-        
-        imported_count = 0
-        for task in tasks:
-            # Get comments for task
-            comments_response = await client.get(
-                f"{TODOIST_API_BASE}/comments",
-                params={"task_id": task["id"]},
+    try:
+        async with httpx.AsyncClient() as client:
+            # Get tasks
+            tasks_response = await client.get(
+                f"{TODOIST_API_BASE}/tasks",
                 headers={"Authorization": f"Bearer {TODOIST_API_TOKEN}"}
             )
-            comments = comments_response.json()
+            if tasks_response.status_code != 200:
+                raise HTTPException(status_code=tasks_response.status_code, detail="Failed to fetch tasks from Todoist")
             
-            # Convert to our format
-            todoist_task = TodoistTask(
-                id=task["id"],
-                content=task["content"],
-                description=task.get("description", ""),
-                due=task.get("due"),
-                priority=task.get("priority", 1),
-                project_id=task.get("project_id"),
-                labels=task.get("labels", []),
-                parent_id=task.get("parent_id")
-            )
+            tasks = tasks_response.json()
             
-            # Store task
-            db_task = {
-                "id": todoist_task.id,
-                "content": todoist_task.content,
-                "description": todoist_task.description,
-                "is_completed": False,
-                "labels": json.dumps(todoist_task.labels),
-                "due_date": todoist_task.due.get("date") if todoist_task.due else None,
-                "priority_level": {
-                    4: Priority.RED,
-                    3: Priority.ORANGE,
-                    2: Priority.YELLOW,
-                    1: Priority.GREEN
-                }.get(todoist_task.priority, Priority.GREEN),
-                "task_order": todoist_task.priority * 10,
-                "comments": "\n".join([c["content"] for c in comments])
+            imported_count = 0
+            for task in tasks:
+                try:
+                    # Get comments for task
+                    comments_response = await client.get(
+                        f"{TODOIST_API_BASE}/comments",
+                        params={"task_id": task["id"]},
+                        headers={"Authorization": f"Bearer {TODOIST_API_TOKEN}"}
+                    )
+                    comments = comments_response.json() if comments_response.status_code == 200 else []
+                    
+                    # Convert to our format
+                    priority_map = {
+                        4: Priority.RED.value,
+                        3: Priority.ORANGE.value,
+                        2: Priority.YELLOW.value,
+                        1: Priority.GREEN.value
+                    }
+                    
+                    db_task = {
+                        "id": str(task["id"]),
+                        "content": task["content"],
+                        "description": task.get("description", ""),
+                        "is_completed": False,
+                        "labels": json.dumps(task.get("labels", [])),
+                        "docid": task.get("project_id"),
+                        "due_date": task.get("due", {}).get("date"),
+                        "comments": "\n".join([c["content"] for c in comments]),
+                        "task_order": task.get("order", 1),
+                        "priority_level": priority_map.get(task.get("priority", 1), Priority.GREEN.value)
+                    }
+                    
+                    # Insert task
+                    query = """
+                    INSERT INTO tasks 
+                    (id, content, description, is_completed, labels, docid, due_date, comments, task_order, priority_level)
+                    VALUES (:id, :content, :description, :is_completed, :labels, :docid, :due_date, :comments, :task_order, :priority_level)
+                    ON CONFLICT (id) DO UPDATE SET
+                        content = :content,
+                        description = :description,
+                        labels = :labels,
+                        docid = :docid,
+                        due_date = :due_date,
+                        comments = :comments,
+                        task_order = :task_order,
+                        priority_level = :priority_level
+                    """
+                    await database.execute(query, db_task)
+                    imported_count += 1
+                except Exception as task_error:
+                    print(f"Error importing task {task.get('id')}: {str(task_error)}")
+                    continue
+            
+            return {
+                "status": "success",
+                "imported_count": imported_count,
+                "last_sync": datetime.now(timezone.utc).isoformat()
             }
-            
-            # Insert task
-            query = """
-            INSERT INTO tasks (id, content, description, is_completed, labels, due_date, priority_level, task_order, comments)
-            VALUES (:id, :content, :description, :is_completed, :labels, :due_date, :priority_level, :task_order, :comments)
-            ON CONFLICT (id) DO UPDATE SET
-                content = :content,
-                description = :description,
-                labels = :labels,
-                due_date = :due_date,
-                priority_level = :priority_level,
-                task_order = :task_order,
-                comments = :comments
-            """
-            await database.execute(query, db_task)
-            
-            # Enrich with Ursula's context
-            enriched = await enrich_task_for_ai(todoist_task.id)
-            
-            # Update with enriched data
-            await database.execute("""
-                UPDATE tasks 
-                SET ursula_notes = :notes,
-                    voice_pattern = :pattern,
-                    last_reviewed = CURRENT_TIMESTAMP
-                WHERE id = :id
-            """, {
-                "id": todoist_task.id,
-                "notes": enriched.context.get("description"),
-                "pattern": enriched.voice_pattern
-            })
-            
-            imported_count += 1
-        
-        return {
-            "status": "success",
-            "imported_count": imported_count,
-            "last_sync": datetime.now(timezone.utc).isoformat()
-        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/tasks/todoist/sync", tags=["Task Import"])
 async def get_todoist_sync_status():
@@ -924,6 +1135,362 @@ async def get_todoist_sync_status():
     """
     return await database.fetch_one(query)
 
+@app.post("/ingest/raw", tags=["Data Ingestion"])
+async def ingest_raw_data(data: RawDataIngestion):
+    """
+    Ingest raw data into the system for AI processing.
+    Data will be stored in raw form and processed asynchronously.
+    """
+    try:
+        query = """
+        INSERT INTO raw_data 
+        (source, content, metadata, timestamp, context, priority)
+        VALUES (:source, :content, :metadata, :timestamp, :context, :priority)
+        RETURNING id
+        """
+        
+        values = {
+            "source": data.source,
+            "content": json.dumps(data.content),
+            "metadata": json.dumps(data.metadata) if data.metadata else None,
+            "timestamp": data.timestamp,
+            "context": data.context,
+            "priority": data.priority
+        }
+        
+        result = await database.execute(query, values)
+        
+        # Trigger async processing if needed
+        if data.priority == "urgent":
+            await process_urgent_data(result)
+        
+        return {
+            "status": "success",
+            "message": "Data ingested successfully",
+            "id": result
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/ingest/status/{ingest_id}", tags=["Data Ingestion"])
+async def get_ingestion_status(ingest_id: int):
+    """
+    Check the status of ingested data processing
+    """
+    query = """
+    SELECT 
+        id,
+        source,
+        timestamp,
+        context,
+        priority,
+        processed,
+        processing_status,
+        last_processed
+    FROM raw_data 
+    WHERE id = :id
+    """
+    result = await database.fetch_one(query, {"id": ingest_id})
+    if not result:
+        raise HTTPException(status_code=404, detail="Ingestion record not found")
+    return result
+
+@app.get("/ingest/pending", tags=["Data Ingestion"])
+async def get_pending_ingestions(
+    source: Optional[str] = None,
+    priority: Optional[str] = None,
+    limit: int = 10
+):
+    """
+    Get pending data ingestions for processing
+    """
+    query = """
+    SELECT 
+        id,
+        source,
+        timestamp,
+        context,
+        priority
+    FROM raw_data 
+    WHERE processed = FALSE
+    """
+    if source:
+        query += " AND source = :source"
+    if priority:
+        query += " AND priority = :priority"
+    query += " ORDER BY timestamp DESC LIMIT :limit"
+    
+    params = {"source": source, "priority": priority, "limit": limit}
+    return await database.fetch_all(query, params)
+
+async def process_urgent_data(ingest_id: int):
+    """
+    Process urgent data immediately
+    """
+    query = """
+    SELECT * FROM raw_data WHERE id = :id
+    """
+    data = await database.fetch_one(query, {"id": ingest_id})
+    if not data:
+        return
+    
+    content = json.loads(data["content"])
+    
+    # Check for tasks
+    if "tasks" in content:
+        for task in content["tasks"]:
+            task_query = """
+            INSERT INTO tasks 
+            (content, description, priority_level, due_date)
+            VALUES (:content, :description, :priority_level, :due_date)
+            """
+            await database.execute(task_query, {
+                "content": task.get("content"),
+                "description": task.get("description"),
+                "priority_level": "RED" if task.get("urgent") else "YELLOW",
+                "due_date": task.get("due_date")
+            })
+    
+    # Update processing status
+    update_query = """
+    UPDATE raw_data 
+    SET processed = TRUE,
+        processing_status = 'completed',
+        last_processed = CURRENT_TIMESTAMP
+    WHERE id = :id
+    """
+    await database.execute(update_query, {"id": ingest_id})
+
+@app.post("/webhook/{source}", tags=["Webhooks"])
+async def handle_webhook(
+    source: str,
+    payload: WebhookPayload,
+    x_signature: Optional[str] = Header(None)
+):
+    """
+    Handle incoming webhooks from various sources.
+    Supports: Todoist, Email, Calendar, etc.
+    """
+    try:
+        # Verify webhook signature if provided
+        if x_signature and not verify_webhook_signature(source, x_signature, payload):
+            raise HTTPException(status_code=401, detail="Invalid webhook signature")
+        
+        # Store raw webhook data
+        query = """
+        INSERT INTO raw_data 
+        (source, content, metadata, timestamp, context, priority)
+        VALUES (:source, :content, :metadata, :timestamp, :context, :priority)
+        RETURNING id
+        """
+        
+        # Extract priority and context based on source and event type
+        priority = determine_priority(source, payload.event_type, payload.data)
+        context = determine_context(source, payload.event_type)
+        
+        values = {
+            "source": source,
+            "content": json.dumps(payload.data),
+            "metadata": json.dumps({
+                "event_type": payload.event_type,
+                "signature": payload.signature
+            }),
+            "timestamp": payload.timestamp,
+            "context": context,
+            "priority": priority
+        }
+        
+        ingest_id = await database.execute(query, values)
+        
+        # Process urgent webhooks immediately
+        if priority == "urgent":
+            await process_urgent_data(ingest_id)
+        
+        return {
+            "status": "success",
+            "message": f"Webhook from {source} processed",
+            "id": ingest_id
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+def verify_webhook_signature(source: str, signature: str, payload: WebhookPayload) -> bool:
+    """Verify webhook signature based on source"""
+    # Add signature verification logic per source
+    if source == "todoist":
+        # Todoist signature verification
+        return True
+    return True  # Default to True for now
+
+def determine_priority(source: str, event_type: str, data: Dict[str, Any]) -> str:
+    """Determine priority based on source and event data"""
+    if source == "todoist":
+        if "due" in data and data.get("priority", 1) >= 3:
+            return "urgent"
+    elif source == "email" and "urgent" in data.get("subject", "").lower():
+        return "urgent"
+    return "normal"
+
+def determine_context(source: str, event_type: str) -> str:
+    """Determine context based on source and event type"""
+    contexts = {
+        "todoist": "task_management",
+        "email": "communication",
+        "calendar": "scheduling"
+    }
+    return contexts.get(source, "general")
+
+@app.get("/webhook/config/{source}", tags=["Webhooks"])
+async def get_webhook_config(source: str):
+    """
+    Get webhook configuration for a specific source
+    """
+    configs = {
+        "todoist": {
+            "url": f"http://192.168.0.63:8080/webhook/todoist",
+            "headers": {
+                "Content-Type": "application/json",
+                "X-Signature": "YOUR_SIGNATURE"
+            },
+            "events": ["item:added", "item:completed", "item:updated"],
+            "example": {
+                "event_type": "item:added",
+                "data": {
+                    "content": "New task",
+                    "priority": 4
+                }
+            }
+        },
+        "email": {
+            "url": f"http://192.168.0.63:8080/webhook/email",
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "example": {
+                "event_type": "new_email",
+                "data": {
+                    "subject": "Urgent: Medical Appointment",
+                    "body": "Reminder for tomorrow"
+                }
+            }
+        }
+    }
+    
+    if source not in configs:
+        raise HTTPException(status_code=404, detail=f"No config for source: {source}")
+    
+    return configs[source]
+
+@app.get("/tasks/roll_call/daily", response_model=List[Dict], tags=["Task Roll Call"])
+async def get_daily_roll_call():
+    """
+    Get today's task roll call report
+    """
+    query = """
+        SELECT * FROM daily_roll_call 
+        WHERE DATE(report_date) = DATE('now')
+        ORDER BY generated_timestamp DESC 
+        LIMIT 1
+    """
+    return await database.fetch_all(query)
+
+@app.get("/tasks/roll_call/urgent", response_model=List[Dict], tags=["Task Roll Call"])
+async def get_urgent_tasks():
+    """
+    Get all urgent (RED) tasks
+    """
+    query = """
+        SELECT * FROM task_roll_call 
+        WHERE urgency = 'RED' 
+        AND status != 'completed'
+        ORDER BY days_overdue DESC
+    """
+    return await database.fetch_all(query)
+
+@app.get("/tasks/roll_call/high", response_model=List[Dict], tags=["Task Roll Call"])
+async def get_high_priority_tasks():
+    """
+    Get all high priority (ORANGE) tasks
+    """
+    query = """
+        SELECT * FROM task_roll_call 
+        WHERE urgency = 'ORANGE' 
+        AND status != 'completed'
+        ORDER BY days_overdue DESC
+    """
+    return await database.fetch_all(query)
+
+@app.get("/tasks/roll_call/patterns/{category}", response_model=List[Dict], tags=["Task Roll Call"])
+async def get_behavior_patterns(category: str):
+    """
+    Get behavior patterns for a specific category
+    """
+    query = """
+        SELECT * FROM behavior_patterns 
+        WHERE category = :category
+        ORDER BY frequency DESC
+    """
+    return await database.fetch_all(query, {"category": category})
+
+@app.post("/tasks/roll_call/ingest", response_model=Dict, tags=["Task Roll Call"])
+async def ingest_new_task(task: Dict = Body(...)):
+    """
+    Ingest a new task into the system
+    """
+    query = """
+        INSERT INTO data_ingest_queue (
+            source_type, content, metadata, priority, 
+            processing_agent, processing_status
+        ) VALUES (
+            :source_type, :content, :metadata, :priority,
+            :processing_agent, 'pending'
+        ) RETURNING id
+    """
+    return await database.fetch_one(query, task)
+
+@app.put("/tasks/roll_call/{task_id}/status", response_model=Dict, tags=["Task Roll Call"])
+async def update_task_status(
+    task_id: str,
+    status: str = Body(..., embed=True),
+    notes: Optional[str] = Body(None, embed=True)
+):
+    """
+    Update task status and add notes
+    """
+    query = """
+        UPDATE task_roll_call 
+        SET status = :status,
+        last_updated = CURRENT_TIMESTAMP,
+        ai_observations = CASE 
+            WHEN ai_observations IS NULL THEN :notes
+            ELSE ai_observations || ' | ' || :notes
+        END
+        WHERE id = :task_id
+        RETURNING *
+    """
+    return await database.fetch_one(query, {
+        "task_id": task_id,
+        "status": status,
+        "notes": notes
+    })
+
+@app.get("/tasks/roll_call/analytics/{task_id}", response_model=Dict, tags=["Task Roll Call"])
+async def get_task_analytics(task_id: str):
+    """
+    Get analytics for a specific task
+    """
+    query = """
+        SELECT * FROM task_analytics 
+        WHERE task_id = :task_id
+    """
+    return await database.fetch_one(query, {"task_id": task_id})
+
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("ursula_api:app", host="0.0.0.0", port=8080, reload=True)
+    # Initialize database
+    if not os.path.exists('ursula.db'):
+        init_db()
+    
+    # Start server
+    print("Starting Ursula's Task Management System...")
+    print("Starting server at http://0.0.0.0:8080")
+    uvicorn.run(app, host="0.0.0.0", port=8080, log_level="info")
