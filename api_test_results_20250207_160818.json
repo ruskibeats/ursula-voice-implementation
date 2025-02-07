@@ -1,0 +1,368 @@
+[
+  {
+    "endpoint": "/health",
+    "method": "GET",
+    "status_code": 200,
+    "response": {
+      "status": "healthy",
+      "database": "connected",
+      "memory": 44.4,
+      "disk": 8.267597198486328,
+      "timestamp": "2025-02-07T16:08:18.240444"
+    },
+    "success": true
+  },
+  {
+    "endpoint": "/metrics",
+    "method": "GET",
+    "status_code": null,
+    "response": "Expecting value: line 1 column 1 (char 0)",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'{\"detail\":\"column \\\\\"content\\\\\" does not exist\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/RED",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/ORANGE",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/YELLOW",
+    "method": "GET",
+    "status_code": null,
+    "response": "",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/GREEN",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/all",
+    "method": "GET",
+    "status_code": null,
+    "response": "",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/completed",
+    "method": "GET",
+    "status_code": 422,
+    "response": "b'{\"detail\":[{\"type\":\"enum\",\"loc\":[\"path\",\"priority\"],\"msg\":\"Input should be \\'RED\\', \\'ORANGE\\', \\'YELLOW\\' or \\'GREEN\\'\",\"input\":\"completed\",\"ctx\":{\"expected\":\"\\'RED\\', \\'ORANGE\\', \\'YELLOW\\' or \\'GREEN\\'\"}}]}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/pending",
+    "method": "GET",
+    "status_code": 422,
+    "response": "b'{\"detail\":[{\"type\":\"enum\",\"loc\":[\"path\",\"priority\"],\"msg\":\"Input should be \\'RED\\', \\'ORANGE\\', \\'YELLOW\\' or \\'GREEN\\'\",\"input\":\"pending\",\"ctx\":{\"expected\":\"\\'RED\\', \\'ORANGE\\', \\'YELLOW\\' or \\'GREEN\\'\"}}]}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/roll_call/daily",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/roll_call/urgent",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/roll_call/high",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/roll_call/normal",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/roll_call/low",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/roll_call/patterns",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/roll_call/summary",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/voice/patterns",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/voice/patterns/emotions",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/voice/patterns/prosody",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/voice/patterns/active",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/voice/settings",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/status",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/patterns",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/triggers",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/russ/stories",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/schedule",
+    "method": "GET",
+    "status_code": null,
+    "response": "",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/medications",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/activities",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/universe/family",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/universe/characters",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/universe/locations",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/universe/rules",
+    "method": "GET",
+    "status_code": 200,
+    "response": [
+      {
+        "id": 1,
+        "rule": "Never bet what you can't lose twice",
+        "context": "Gambling and business",
+        "importance_rating": 10,
+        "origin_story": "Lost big once in Monte Carlo, never again",
+        "examples": "[\"Walks away from risky deals\", \"Keeps emergency funds in three countries\"]"
+      },
+      {
+        "id": 2,
+        "rule": "Keep one secret from everyone",
+        "context": "Personal relationships",
+        "importance_rating": 9,
+        "origin_story": "Learned from her mother's disappearance",
+        "examples": "[\"Has a safety deposit box no one knows about\", \"Maintains separate emergency identities\"]"
+      }
+    ],
+    "success": true
+  },
+  {
+    "endpoint": "/universe/schedule",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/universe/relationships",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/universe/network",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/data/sources",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/data/types",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/data/status",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/data/summary",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/create",
+    "method": "POST",
+    "status_code": 405,
+    "response": "b'{\"detail\":\"Method Not Allowed\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/ai_enrich",
+    "method": "POST",
+    "status_code": 422,
+    "response": "b'{\"detail\":[{\"type\":\"missing\",\"loc\":[\"query\",\"task_id\"],\"msg\":\"Field required\",\"input\":null,\"url\":\"https://errors.pydantic.dev/2.5/v/missing\"}]}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/ai_rollcall",
+    "method": "POST",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/voice/analyze",
+    "method": "POST",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/event",
+    "method": "POST",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/123/status",
+    "method": "PUT",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/123/priority",
+    "method": "PUT",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/voice/settings",
+    "method": "PUT",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/status",
+    "method": "PUT",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  }
+]

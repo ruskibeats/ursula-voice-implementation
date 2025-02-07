@@ -1,0 +1,50 @@
+[
+  {
+    "endpoint": "/health",
+    "method": "GET",
+    "status_code": 200,
+    "response": {
+      "status": "healthy",
+      "database": "connected",
+      "memory": 44.8,
+      "disk": 8.269256591796875,
+      "timestamp": "2025-02-07T16:04:22.428113"
+    },
+    "success": true
+  },
+  {
+    "endpoint": "/tasks",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'{\"detail\":\"column \\\\\"content\\\\\" does not exist\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/RED",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/roll_call/daily",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/universe/family",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/ai_enrich",
+    "method": "POST",
+    "status_code": 422,
+    "response": "b'{\"detail\":[{\"type\":\"missing\",\"loc\":[\"query\",\"task_id\"],\"msg\":\"Field required\",\"input\":null,\"url\":\"https://errors.pydantic.dev/2.5/v/missing\"}]}'",
+    "success": false
+  }
+]

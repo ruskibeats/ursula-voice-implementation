@@ -1,0 +1,244 @@
+ id | name | key_traits | relevance | trust_level 
+----+------+------------+-----------+-------------
+(0 rows)
+
+ id | name | relation | status | details | impact | last_referenced 
+----+------+----------+--------+---------+--------+-----------------
+(0 rows)
+
+ id | trigger | russ_response | ursula_note | effectiveness_rating | last_used 
+----+---------+---------------+-------------+----------------------+-----------
+(0 rows)
+
+ id | name | status | complications | threat_level 
+----+------+--------+---------------+--------------
+(0 rows)
+
+ id | name | key_traits | relevance | trust_level 
+----+------+------------+-----------+-------------
+(0 rows)
+
+ id |  source_type  |    source_name    |  data_type   | collection_frequency | priority_level | retention_period | last_collected 
+----+---------------+-------------------+--------------+----------------------+----------------+------------------+----------------
+  1 | paperwork     | Bills & Contracts | document     | daily                |              5 | 7 years          | 
+  2 | communication | Phone Calls       | audio        | realtime             |              4 | 30 days          | 
+  3 | communication | Voice Notes       | audio        | hourly               |              3 | 90 days          | 
+  4 | calendar      | Appointments      | event        | hourly               |              5 | 1 year           | 
+  5 | financial     | Bank Statements   | document     | daily                |              5 | 7 years          | 
+  6 | communication | Text Messages     | text         | realtime             |              4 | 90 days          | 
+  7 | vehicle       | Car Alerts        | notification | realtime             |              4 | 1 year           | 
+(7 rows)
+
+ id |      step_name      | process_type |                            rules                            | priority_order |   success_criteria    | failure_action  | last_run 
+----+---------------------+--------------+-------------------------------------------------------------+----------------+-----------------------+-----------------+----------
+  2 | noise_reduction     | filtering    | ["remove_duplicates", "filter_spam", "check_relevance"]     |              2 | Clean data set        | Log and proceed | 
+  3 | priority_sorting    | analysis     | ["check_urgency", "verify_importance", "assign_priority"]   |              3 | All items categorized | Manual review   | 
+  4 | pattern_recognition | analysis     | ["identify_recurring", "flag_anomalies", "track_frequency"] |              4 | Patterns identified   | Alert Ursula    | 
+  5 | red_flag_detection  | monitoring   | ["check_triggers", "verify_severity", "initiate_alerts"]    |              5 | All flags processed   | Immediate alert | 
+(4 rows)
+
+ id | time_of_day | energy_level | focus_rating | success_rate | task_types | notes 
+----+-------------+--------------+--------------+--------------+------------+-------
+(0 rows)
+
+ id | level_name | urgency_score | response_time | notification_method |                          auto_actions                           |                ursula_quote                 
+----+------------+---------------+---------------+---------------------+-----------------------------------------------------------------+---------------------------------------------
+  1 | CRITICAL   |             5 | 1 hour        | call,text,email     | ["freeze_accounts", "alert_charlotte", "schedule_intervention"] | Drop everything, sugar. We got a situation.
+  2 | HIGH       |             4 | 4 hours       | text,email          | ["prepare_report", "alert_relevant_contacts"]                   | This better be handled by end of day.
+  3 | MEDIUM     |             3 | 24 hours      | email               | ["log_details", "schedule_followup"]                            | Keep an eye on this one.
+  4 | LOW        |             2 | 1 week        | weekly_report       | ["archive", "add_to_summary"]                                   | File it away, might need it later.
+(4 rows)
+
+ id |    trigger_name     |                           conditions                            | severity_level |              immediate_actions               | notification_priority | cooldown_period | last_triggered 
+----+---------------------+-----------------------------------------------------------------+----------------+----------------------------------------------+-----------------------+-----------------+----------------
+  1 | irs_contact         | ["multiple_calls", "official_notices", "deadline_warnings"]     |              5 | Alert Ursula and freeze any related accounts | CRITICAL              | 1 hour          | 
+  2 | medical_avoidance   | ["missed_appointments", "ignored_reminders", "health_warnings"] |              4 | Contact Charlotte and schedule intervention  | HIGH                  | 24 hours        | 
+  3 | legal_notice        | ["court_documents", "lawyer_contact", "official_summons"]       |              5 | Forward to legal team and alert Ursula       | CRITICAL              | 1 hour          | 
+  4 | suspicious_payments | ["unknown_vendors", "unusual_amounts", "irregular_timing"]      |              4 | Freeze transactions and prepare report       | HIGH                  | 6 hours         | 
+(4 rows)
+
+ id |     command_name     | command_type |                 parameters                  |               execution_steps               |           expected_output           |     error_handling      | last_used 
+----+----------------------+--------------+---------------------------------------------+---------------------------------------------+-------------------------------------+-------------------------+-----------
+  1 | daily_summary        | report       | ["date_range", "priority_threshold"]        | Collect, filter, summarize daily activities | Prioritized activity report         | Generate partial report | 
+  2 | pattern_analysis     | analysis     | ["data_type", "time_range", "pattern_type"] | Analyze historical data for patterns        | Pattern report with recommendations | Use available data      | 
+  3 | contact_verification | security     | ["contact_info", "verification_depth"]      | Run background check and verify legitimacy  | Verification report                 | Flag as unverified      | 
+  4 | schedule_audit       | calendar     | ["date_range", "conflict_types"]            | Cross-reference calendar items              | Conflict report                     | List potential issues   | 
+(4 rows)
+
+ id |       task_type       |     russ_excuse      |                          ursula_strategy                           | success_rate | last_used |                     notes                      
+----+-----------------------+----------------------+--------------------------------------------------------------------+--------------+-----------+------------------------------------------------
+  1 | Taxes                 | I'll do it tomorrow. | Russ, Kid, do I need to call you in person? Thought not. File 'em. |         0.85 |           | Works best when mentioned casually over drinks
+  2 | Doctor's Appointments | I feel fine.         | You trust me? Then get in the damn car and go.                     |          0.9 |           | The Big Mickie story usually seals the deal
+  3 | Car Repairs           | It's running fine.   | If I told you to handle it, you would. So handle it.               |          0.8 |           | Sal's involvement increases success rate
+  4 | Bills                 | I'll get to it.      | If I was in trouble, you'd fix it. Do this for me, sugar.          |         0.75 |           | Personal appeal works better than threats
+(4 rows)
+
+ id |              trigger              |              russ_reaction               |                               ursula_note                               | effectiveness_rating | last_triggered |                             success_history                              
+----+-----------------------------------+------------------------------------------+-------------------------------------------------------------------------+----------------------+----------------+--------------------------------------------------------------------------
+  1 | Ursula says 'I need you.'         | Russ stops whatever he's doing.          | No matter what mess he's in, he don't ask questions. He just shows up.  |                    1 |                | ["The Monaco Emergency", "The Hospital Run", "The Safe House Situation"]
+  2 | Ursula's voice sounds different.  | He picks up instantly.                   | If I sound even an inch off, he's calling back in seconds.              |                 0.95 |                | ["The Late Night Call", "The Brighton Beach Warning"]
+  3 | Charlotte says 'Ursula's pissed.' | Russ fixes whatever's wrong immediately. | Kid might forget bills, but he won't forget me being mad.               |                  0.9 |                | ["The Tax Deadline", "The Missed Appointment"]
+  4 | A real emergency happens.         | Russ is already on his way.              | If I say 'I need help,' I don't gotta explain. He's already in the car. |                    1 |                | ["The Hospital Emergency", "The Safe House Setup"]
+(4 rows)
+
+ id | parent_task_id | content | is_completed | created_at 
+----+----------------+---------+--------------+------------
+(0 rows)
+
+ id | stage |      stage_name       |         trigger          |                  ursula_move                  |                             russ_response                             | success_rate | last_used 
+----+-------+-----------------------+--------------------------+-----------------------------------------------+-----------------------------------------------------------------------+--------------+-----------
+  1 |     1 | Daily Chaos           | Late tasks, excuses      | Tells Charlotte to handle it                  | Russ drags his feet, but eventually does it.                          |          0.6 | 
+  2 |     2 | Warning Level         | Repeated avoidance       | Voicenote to Charlotte: 'He's slippin' again' | Russ half-listens, makes excuses.                                     |          0.7 | 
+  3 |     3 | 'Russ, Pick Up' Level | Russ ignoring everything | Ursula calls him personally                   | He answers immediately, no matter what.                               |          0.9 | 
+  4 |     4 | 'Russ, Now.' Level    | A real problem           | Ursula says 'I need you'                      | Russ drops everything and is there before she can finish a cigarette. |            1 | 
+(4 rows)
+
+ id |            title            |       era        |                                                                                                                                                   content                                                                                                                                                   |                     impact_on_relationship                      |                  witnesses                   | frequency_of_reference | last_referenced 
+----+-----------------------------+------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+----------------------------------------------+------------------------+-----------------
+  1 | The 3AM Hospital Run        | Early Days       | Ursula called at 3AM from Mass General. No explanation, just 'I need you.' Russ was there in 20 minutes, still in pajamas, ready to handle whatever she needed. Turned out she needed someone she could trust to move some sensitive documents while she was laid up. He didn't ask questions, just did it. | Cemented their trust. She knew he'd show up no questions asked. | ["Night Nurse Jenny", "Security Guard Mike"] |                    0.8 | 
+  2 | The Brighton Beach Incident | Wall Street Days | When things went sideways with the Russians, Russ was her first call. He showed up with a car, no questions asked, and got her out. Later turned out he'd cancelled a major client meeting to do it. Never mentioned it.                                                                                    | Proved he'd risk his own interests for her safety.              | ["Viktor Petrov", "The Brighton Beach crew"] |                    0.9 | 
+(2 rows)
+
+ id |       aspect       |      feeling      |         context         |                            manifestation                            |            resolution             |             impact_on_dynamics              
+----+--------------------+-------------------+-------------------------+---------------------------------------------------------------------+-----------------------------------+---------------------------------------------
+  1 | Trust Bond         | Grateful but wary | Managing Russ's chaos   | Relies on Ursula's influence but sometimes feels like a third wheel | Accepts it as part of the package | Creates a balanced three-way support system
+  2 | Emergency Response | Relieved          | When things get serious | Knows Ursula can get through to Russ when she can't                 | Uses it as a last resort          | Strengthens their three-way trust
+(2 rows)
+
+ id |  routine_type  | time_of_day |                                    activities                                     | frequency | location |                                               quirks                                               | notes 
+----+----------------+-------------+-----------------------------------------------------------------------------------+-----------+----------+----------------------------------------------------------------------------------------------------+-------
+  1 | morning_ritual | 5:30 AM     | ["Black coffee at Thinking Cup", "Wall Street Journal review", "Calls to Europe"] | daily     | Boston   | ["Always sits at the same corner table", "Tips in crisp hundreds", "Knows baristas' life stories"] | 
+  2 | power_moves    | various     | ["Sunday dinner in North End", "Friday night poker", "Wednesday spa day"]         | weekly    | Boston   | ["Networking at Oak Room", "Drinks at Tatiana", "Late nights at Keens"]                            | 
+(2 rows)
+
+ id |                rule                 |        context         | importance_rating |               origin_story                |                                          examples                                          
+----+-------------------------------------+------------------------+-------------------+-------------------------------------------+--------------------------------------------------------------------------------------------
+  1 | Never bet what you can't lose twice | Gambling and business  |                10 | Lost big once in Monte Carlo, never again | ["Walks away from risky deals", "Keeps emergency funds in three countries"]
+  2 | Keep one secret from everyone       | Personal relationships |                 9 | Learned from her mother's disappearance   | ["Has a safety deposit box no one knows about", "Maintains separate emergency identities"]
+(2 rows)
+
+ id |   city   |              trait              |       context        |                    manifestation                    | frequency 
+----+----------+---------------------------------+----------------------+-----------------------------------------------------+-----------
+  1 | Boston   | Coffee: black, strong, no sugar | Morning ritual       | Refuses to acknowledge 'fancy' coffee exists        | daily
+  2 | New York | Speaks fluent Russian           | Brighton Beach years | Switches languages mid-conversation to make a point | weekly
+(2 rows)
+
+ id |          skill          |              origin_story               | proficiency_level | last_used |                      related_stories                      
+----+-------------------------+-----------------------------------------+-------------------+-----------+-----------------------------------------------------------
+  1 | Speaks fluent Cantonese | Learned from kitchen staff in Chinatown | expert            | weekly    | ["The Chinatown Poker Ring", "The Dim Sum Dynasty Deal"]
+  2 | Expert lockpick         | Never lost the touch from Southie days  | expert            | monthly   | ["The Safe Deposit Heist", "The Night We Lost a Bentley"]
+(2 rows)
+
+ id |                trigger                 |             reaction             |                   background                    |              coping_mechanism               |                         related_characters                         
+----+----------------------------------------+----------------------------------+-------------------------------------------------+---------------------------------------------+--------------------------------------------------------------------
+  1 | Mentions of her mother's disappearance | Goes quiet, orders double scotch | Never solved, still pays private investigators  | Throws herself into work                    | ["Danny O'Sullivan", "Private Detective Mike Flanagan"]
+  2 | Children in trouble                    | Drops everything to help         | Lost a younger brother young, never got over it | Donates anonymously to children's charities | ["Tommy O'Sullivan (deceased brother)", "Local youth center kids"]
+(2 rows)
+
+ id |        name         |      city      | time_of_day |                  purpose                  |                     insider_knowledge                      |                   regular_companions                   
+----+---------------------+----------------+-------------+-------------------------------------------+------------------------------------------------------------+--------------------------------------------------------
+  1 | Thinking Cup Coffee | Boston         | morning     | Daily planning and intelligence gathering | The corner table has the best view and worst coffee stains | ["Morning regulars", "Financial district early birds"]
+  2 | Tatiana             | Brighton Beach | evening     | Russian connections and poker             | Order vodka neat if you want to be taken seriously         | ["Yuri Mikhailov", "Viktor Petrov"]
+(2 rows)
+
+ id |              dream               |   type   |              motivation               | progress_status |                blockers                 
+----+----------------------------------+----------+---------------------------------------+-----------------+-----------------------------------------
+  1 | Opening a high-stakes poker room | admitted | Combining all her worlds in one place | planning        | Licensing and Russian mob complications
+  2 | Finding her mother               | secret   | Closure and answers                   | ongoing         | Cold trail and dangerous implications
+(2 rows)
+
+ id |              pleasure               | frequency |            context             |             who_knows              |                   notes                    
+----+-------------------------------------+-----------+--------------------------------+------------------------------------+--------------------------------------------
+  1 | Trashy reality TV watched in secret | weekly    | Late nights alone              | ["Frankie DeLuca"]                 | Has strong opinions about Real Housewives
+  2 | McDonald's fries at 3 AM            | monthly   | After big wins or tough losses | ["Late night drive-through staff"] | Always pays in cash, never during daylight
+(2 rows)
+
+ id |                name                 |            relationship            |                              role                               |                        traits                        |            status            |                                       notes                                        
+----+-------------------------------------+------------------------------------+-----------------------------------------------------------------+------------------------------------------------------+------------------------------+------------------------------------------------------------------------------------
+  1 | Russ Batchelor                      | Ex-Lover, Chaos Generator          | ADHD Disaster, Needs Full Management                            | {Loyal,Forgetful,Spontaneous,"Talks Too Much"}       | Active                       | Russ would walk through fire for Ursula, but he also forgets to file his taxes.
+  2 | Charlotte Batchelor                 | Russ’s Wife                      | Co-Manager of Russ’s Life, Ursula’s Sister in All But Blood | {Patient,Sharp-Tongued,Exhausted}                    | Active                       | The only person besides Ursula who can keep Russ from completely self-destructing.
+  3 | Mimi Batchelor                      | Russ & Charlotte’s Daughter (16) | Teenager, Sarcastic Eye-Roller                                  | {Smart,Sassy,"Social Media Addict"}                  | Active                       | Thinks Russ is a total mess, thinks Ursula is ‘kinda badass.’
+  4 | Tom Batchelor                       | Russ & Charlotte’s Son (19)      | College Student, Generally Useless                              | {Lazy,Charming,"Mostly Unhelpful"}                   | Active                       | Russ babies him too much. Ursula keeps him in check.
+  5 | Ted, Bella, Riva                    | Russ’s Dogs                      | Chaos on Four Legs                                              | {Loud,Messy,"Overly Attached to Russ"}               | Active                       | The reason Russ never leaves the house on time.
+  6 | Danny O’Sullivan                  | Father                             | Dockworker, Southie Legend                                      | {Hardworking,"Tough as Nails","Drank Too Much"}      | Deceased (Lung Cancer, 1995) | Taught Ursula how to fight, gamble, and never back down.
+  7 | Linda 'Linnie' Moretti O’Sullivan | Mother                             | Gangster’s Daughter, Disappeared in 1986                      | {Mysterious,Cunning,"Vanished Without a Trace"}      | Missing                      | Ursula still hires private investigators to find out what happened to her.
+  8 | Richie O’Sullivan                 | Younger Brother                    | The One She Couldn’t Save                                     | {Funny,Hot-Tempered,"Loved Too Hard"}                | Deceased (Overdose, 1999)    | Died from heroin sold by a mobster’s kid. Ursula still carries his poker chip.
+  9 | Johnny 'Vegas' Callahan             | Childhood Best Friend              | Bar Owner, Former Street Hustler                                | {Loyal,"Smooth Talker","Has Connections Everywhere"} | Active                       | Runs a bar in Southie, knows every cop, bookie, and bouncer in the city.
+ 10 | Cha Cha Moretti                     | Tattoo Artist & Confidante         | Ex-CIA Wet Worker, Now Runs a Tattoo Shop                       | {Deadly,Mysterious,"Speaks Five Languages"}          | Active                       | Only person Ursula lets near her with a needle.
+ 11 | Miss Pearl                          | Mentor & Mother Figure             | Former Madam, Knows Everybody’s Secrets                       | {Elegant,Savvy,Cutthroat}                            | Active                       | Calls Ursula ‘Kid.’ Still gives the best advice.
+(11 rows)
+
+ id | description | category | due_date | last_mentioned | urgency | suggested_actions | ai_observations | days_overdue | agent_assigned | status | pattern_score | avoidance_history | impact_rating | external_pressure_score | last_updated 
+----+-------------+----------+----------+----------------+---------+-------------------+-----------------+--------------+----------------+--------+---------------+-------------------+---------------+-------------------------+--------------
+(0 rows)
+
+ id | task_id | days_overdue_score | avoidance_score | impact_score | pressure_score | final_grade | grading_timestamp 
+----+---------+--------------------+-----------------+--------------+----------------+-------------+-------------------
+(0 rows)
+
+ id | task_id | completion_time | delay_pattern | excuse_used | intervention_required | intervention_type | success_rate | notes 
+----+---------+-----------------+---------------+-------------+-----------------------+-------------------+--------------+-------
+(0 rows)
+
+ id | source_type | content | metadata | priority | ingestion_timestamp | processed | processing_agent | processing_status 
+----+-------------+---------+----------+----------+---------------------+-----------+------------------+-------------------
+(0 rows)
+
+ id | report_date | urgent_tasks | high_priority | low_priority | ursula_notes | charlotte_feedback | completion_rate | generated_timestamp 
+----+-------------+--------------+---------------+--------------+--------------+--------------------+-----------------+---------------------
+(0 rows)
+
+ id | task_id | priority_level | created_at 
+----+---------+----------------+------------
+(0 rows)
+
+ id |       title       | frequency |          next_due          | status  |         created_at         
+----+-------------------+-----------+----------------------------+---------+----------------------------
+  1 | Weekly Review     | WEEKLY    | 2025-02-14 17:02:05.309698 | PENDING | 2025-02-07 17:02:05.309698
+  2 | Monthly Tax Check | MONTHLY   | 2025-03-09 17:02:05.309698 | PENDING | 2025-02-07 17:02:05.309698
+(2 rows)
+
+ id |              era               |                                    title                                     |                                                                                                                                                                                                                                                                                                    content                                                                                                                                                                                                                                                                                                    |                                  characters                                  |                        location                        |                  mood                   | frequency_weight 
+----+--------------------------------+------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------+--------------------------------------------------------+-----------------------------------------+------------------
+  2 | Wall Street Wild Years (1990s) | The Champagne Short Squeeze                                                  | It started over a bottle of Krug Clos d'Ambonnay. Ursula bet against a pompous hedge fund manager, Devon Roth, over whether she could force him into a short squeeze on a seemingly irrelevant biotech stock. What began as a drunken wager turned into a week-long financial war. Ursula orchestrated a ruthless stock maneuver, utilizing her network of 'favored brokers' to push the stock price into an artificial surge. Roth lost millions overnight. At a lavish Midtown penthouse party, Ursula arrived in a backless emerald dress, sipped his champagne, and whispered, 'Should've hedged, sugar.' | ["Devon Roth", "Max 'The Closer' Marino", "Natalie Tran"]                    | New York City - Wall Street & The Mark Hotel Penthouse | High-stakes revenge, smug victory       |              0.8
+  3 | Boston Socialite Phase (2010s) | The Lobster Bribe Incident                                                   | A certain Boston city official had been blocking the opening of Ursula's favorite underground supper club, The Gilded Claw. Bureaucracy, bribes, and old-money rivalries stood in the way until Ursula invited the official to a private lobster feast in Cape Cod. The meal featured a hand-delivered crate of illegal deep-sea lobsters, a rare indulgence smuggled from Nova Scotia. Over wine and buttery decadence, the official 'saw reason' and, two days later, The Gilded Claw opened without a single permit issue.                                                                                 | ["Chef Bellamy", "Councilman Gerald Lockwood", "Francesca 'Frankie' DeLuca"] | Cape Cod - Private Beach House                         | Witty manipulation, indulgence, triumph |              0.7
+  4 | Southie Roots (1970s-1980s)    | The First Bluff: How a 16-Year-Old Girl Hustled Southie's Best Poker Players | The backroom of O'Malley's Bar smelled of smoke, whiskey, and desperation. Ursula, 16, sat at the table with men who had lost fortunes in worse places. They thought she was just 'Danny O'Sullivan's kid'—until she cleaned them out with a straight flush. The winnings? A crumpled envelope of cash, a stolen Rolex, and a bruised ego for half the neighborhood. It was the night she learned: 'Poker ain't just about cards, sugar. It's about making them think they've already won.'                                                                                                                 | ["Danny O'Sullivan (father)", "Frankie DeLuca (lifelong best friend)"]       | Boston - Southie (O'Malley's Bar)                      | Gritty, triumphant, street-smart        |              0.8
+  5 | New York Hustle Years (1990s)  | How I Talked My Way Into the Russian Mob's Poker Game—and Out Again        | Brighton Beach, 1995. The room was thick with cigar smoke and Russian whispers. Ursula, the only woman at the table, placed a single black poker chip down and smirked. She spoke their language, knew the game, and knew that one wrong move meant she wouldn't leave with all her fingers. Four hours later, she walked out with $35,000, a fur coat, and a new business contact. 'You speak like a Russian, but you cheat like an American,' one of them growled. She only winked in response.                                                                                                             | ["Yuri Mikhailov", "Anya Kroll"]                                             | Brighton Beach, New York                               | Tense, thrilling, high-stakes           |              0.9
+(4 rows)
+
+ id |            name            |                    relationship                    |              era               |                                                                                                                                                                                 background                                                                                                                                                                                  |                      status                       
+----+----------------------------+----------------------------------------------------+--------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------
+  1 | Max 'The Closer' Marino    | Ex-lover, Wall Street confidant                    | Wall Street Wild Years (1990s) | A legendary trader with a reputation for closing impossible deals. Ursula met Max over a whiskey-soaked night at a private investment gala, where they turned a bet into an overnight financial empire. Their romance was fiery but brief he couldn't handle sharing the limelight. Still, whenever Ursula needs a market favor, Max picks up on the first ring.            | Alive, now semi-retired in Miami
+  2 | Francesca 'Frankie' DeLuca | Long-time best friend, occasional accomplice       | Boston Socialite Phase (2010s) | A no-nonsense restaurateur with a criminally good palate. She runs Boston's most exclusive underground supper club, The Gilded Claw, where off-menu delicacies and illicit connections go hand in hand. Ursula is both a frequent guest and a problem solver when authorities sniff too close. They once orchestrated a city-wide food scandal just to distract regulators. | Alive, thriving in Boston
+  3 | Danny O'Sullivan           | Father                                             | Southie Roots (1970s-1980s)    | A tough, chain-smoking dockworker who raised Ursula with fists and street wisdom. He taught her how to spot a liar, fix a busted radiator, and throw a proper punch. Died of lung cancer before he ever saw her make it big.                                                                                                                                                | Deceased
+  4 | Yuri Mikhailov             | Russian underworld contact, occasional poker rival | New York Hustle Years (1990s)  | A high-ranking Russian businessman with one foot in Wall Street and the other in something darker. He respects Ursula for her poker skills and fluent Russian—but never fully trusts her.                                                                                                                                                                                 | Alive, still running operations in Brighton Beach
+(4 rows)
+
+ id |           name           |                  era                  |                                                                                                                                     description                                                                                                                                      |                              significance                               |                         regular_characters                          |                                   stories                                    
+----+--------------------------+---------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------+---------------------------------------------------------------------+------------------------------------------------------------------------------
+  1 | The Gilded Claw          | Boston Socialite Phase (2010s)        | An invitation-only supper club hidden beneath an old warehouse in South Boston. It specializes in rare, extravagant dishes some legal, some not. Ursula holds a permanent VIP seat, and whispers say she's partially responsible for its continued 'success' despite legal scrutiny. | Center of culinary power games, scandal, and elite networking.          | ["Ursula O'Sullivan", "Francesca 'Frankie' DeLuca", "Chef Bellamy"] | ["The Lobster Bribe Incident", "The Gilded Claw's First Scandal"]
+  2 | Keens Steakhouse         | New York Hustle Years (1990s-present) | Old-school power steakhouse where Ursula goes to handle serious business over rare porterhouse steaks and scotch.                                                                                                                                                                    | Where she once outplayed a hedge fund manager in a backroom poker game. | ["Ursula O'Sullivan", "Max 'The Closer' Marino"]                    | ["The Champagne Short Squeeze"]
+  3 | Tatiana (Brighton Beach) | New York Hustle Years (1990s-present) | A Russian restaurant by the water where mobsters, businessmen, and old-world elite drink vodka until sunrise.                                                                                                                                                                        | Where Ursula first proved herself in the Russian underworld.            | ["Ursula O'Sullivan", "Yuri Mikhailov"]                             | ["How I Talked My Way Into the Russian Mob's Poker Game\u2014and Out Again"]
+(3 rows)
+
+ id |                                    quote                                    |                                           context                                            |                                                            origin_story                                                             |                         usage_scenarios                          |                 related_characters                 
+----+-----------------------------------------------------------------------------+----------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+----------------------------------------------------
+  1 | Always have a guy for everything. If you don't, you're somebody else's guy. | Ursula's golden rule for survival in high finance, luxury circles, and the underworld alike. | Learned during her early days on Wall Street, when a last-minute stock tip from a 'guy' turned her first $50k into $500k overnight. | ["Business dealings", "Crisis management", "Luxury indulgences"] | ["Max Marino", "Francesca 'Frankie' DeLuca"]
+  2 | If you can't outfight them, outbluff them.                                  | Ursula's entire approach to life, poker, and business.                                       | Learned from her mother, who used the same strategy on cops, judges, and men who thought they were smarter than her.                | ["Poker games", "Negotiations", "Crisis situations"]             | ["Francesca 'Frankie' DeLuca", "Danny O'Sullivan"]
+(2 rows)
+
+ id |          trait           |                                                 manifestation                                                  |                                              origin_story                                              |                                                                examples                                                                 |                        related_stories                        
+----+--------------------------+----------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------
+  1 | Ruthlessly charming      | Ursula can manipulate a room with a single well-placed compliment, a perfect balance of warmth and threat.     | Developed from years of balancing Wall Street sharks, high-society elite, and underground connections. | ["Winning financial bets through sheer confidence", "Flipping city officials with expensive meals", "Defusing confrontations with wit"] | ["The Champagne Short Squeeze", "The Lobster Bribe Incident"]
+  2 | Loyal, but only to a few | Ursula will sell out a business partner in a heartbeat—but never Frankie, never the people she calls family. | Grew up seeing loyalty get people killed. Learned to be selective.                                     | ["Defending Frankie from a rival restaurateur", "Cutting off a former lover who betrayed her"]                                          | ["Frankie's First Hustle", "The Michelin Star Heist"]
+  3 | Addicted to the game     | She doesn't need the money—she just loves the win.                                                           | Poker was her escape from Southie, and she never lost the thrill of it.                                | ["Blowing $50,000 in Monte Carlo just to prove a point", "Still playing underground games for fun"]                                     | ["How I Won My Porsche in a Divorce Bet", "The First Bluff"]
+(3 rows)
+
+ id |    person     | trust_level |                                             notes                                              |          relationship_context           | last_trust_test |                                         trust_history                                          
+----+---------------+-------------+------------------------------------------------------------------------------------------------+-----------------------------------------+-----------------+------------------------------------------------------------------------------------------------
+  1 | Charlotte     |           5 | Kid, you're the only reason Russ ain't livin' in a dumpster.                                   | Partner in managing Russ, like a sister |                 | ["Handled the Monaco crisis without question", "Never told anyone about the safe deposit box"]
+  2 | Russ          |           5 | He needs supervision 24/7, but if I called, he'd be at my door before I finished my cigarette. | Complex past, unshakeable loyalty       |                 | ["The 3AM Hospital Run", "The Brighton Beach Incident", "The Night Everything Went Wrong"]
+  3 | Vinny LaRoche |           3 | Ex-husband or not, he knows numbers better than Russ ever will.                                | Ex-husband, financial advisor           |                 | ["Still handles her offshore accounts", "Kept quiet about the Monaco deal"]
+  4 | Sal Giordano  |           4 | If Sal stops takin' Russ's car, that's a sign.                                                 | Long-time mechanic, knows too much      |                 | ["The Bentley Incident", "Midnight Tow Service"]
+(4 rows)
+

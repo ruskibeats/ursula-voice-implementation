@@ -1,0 +1,392 @@
+[
+  {
+    "endpoint": "/health",
+    "method": "GET",
+    "status_code": 200,
+    "response": {
+      "status": "healthy",
+      "timestamp": "2025-02-07T16:22:23.189287"
+    },
+    "success": true
+  },
+  {
+    "endpoint": "/metrics",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/RED",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/ORANGE",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/YELLOW",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/GREEN",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/all",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/completed",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/pending",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/roll_call/daily",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/roll_call/urgent",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/roll_call/high",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/roll_call/normal",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/roll_call/low",
+    "method": "GET",
+    "status_code": 200,
+    "response": [],
+    "success": true
+  },
+  {
+    "endpoint": "/tasks/roll_call/patterns",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Invalid status\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/roll_call/summary",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Invalid status\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/voice/patterns",
+    "method": "GET",
+    "status_code": 200,
+    "response": [
+      {
+        "id": 1,
+        "emotion": "Calm",
+        "ssml_template": "<speak><prosody rate=\"slow\" pitch=\"low\">{{text}}</prosody></speak>",
+        "description": "Calming voice pattern",
+        "use_case": "Relaxation prompts"
+      },
+      {
+        "id": 2,
+        "emotion": "Energetic",
+        "ssml_template": "<speak><prosody rate=\"fast\" pitch=\"high\">{{text}}</prosody></speak>",
+        "description": "Energetic voice pattern",
+        "use_case": "Motivation prompts"
+      },
+      {
+        "id": 3,
+        "emotion": "Focused",
+        "ssml_template": "<speak><prosody rate=\"medium\" pitch=\"medium\">{{text}}</prosody></speak>",
+        "description": "Focused voice pattern",
+        "use_case": "Task instructions"
+      }
+    ],
+    "success": true
+  },
+  {
+    "endpoint": "/voice/patterns/emotions",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/voice/patterns/prosody",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/voice/patterns/active",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/voice/settings",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/status",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/patterns",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/triggers",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/stories",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/schedule",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/medications",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/activities",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/universe/family",
+    "method": "GET",
+    "status_code": null,
+    "response": "",
+    "success": false
+  },
+  {
+    "endpoint": "/universe/characters",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/universe/locations",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/universe/rules",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/universe/schedule",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/universe/relationships",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/universe/network",
+    "method": "GET",
+    "status_code": 404,
+    "response": "b'{\"detail\":\"Not Found\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/data/sources",
+    "method": "GET",
+    "status_code": 200,
+    "response": {
+      "sources": [
+        "todoist",
+        "email",
+        "calendar",
+        "voice",
+        "sensors"
+      ]
+    },
+    "success": true
+  },
+  {
+    "endpoint": "/data/types",
+    "method": "GET",
+    "status_code": 200,
+    "response": {
+      "types": [
+        "task",
+        "event",
+        "note",
+        "metric",
+        "alert"
+      ]
+    },
+    "success": true
+  },
+  {
+    "endpoint": "/data/status",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/data/summary",
+    "method": "GET",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/create",
+    "method": "POST",
+    "status_code": 422,
+    "response": "b'{\"detail\":\"Missing required fields\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/ai_enrich",
+    "method": "POST",
+    "status_code": 405,
+    "response": "b'{\"detail\":\"Method Not Allowed\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/ai_rollcall",
+    "method": "POST",
+    "status_code": 405,
+    "response": "b'{\"detail\":\"Method Not Allowed\"}'",
+    "success": false
+  },
+  {
+    "endpoint": "/voice/analyze",
+    "method": "POST",
+    "status_code": 200,
+    "response": {
+      "status": "analyzed",
+      "results": {
+        "text": "Test voice analysis",
+        "context": "normal"
+      }
+    },
+    "success": true
+  },
+  {
+    "endpoint": "/russ/event",
+    "method": "POST",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/123/status",
+    "method": "PUT",
+    "status_code": 422,
+    "response": "b'{\"detail\":[{\"type\":\"missing\",\"loc\":[\"query\",\"status\"],\"msg\":\"Field required\",\"input\":null,\"url\":\"https://errors.pydantic.dev/2.5/v/missing\"}]}'",
+    "success": false
+  },
+  {
+    "endpoint": "/tasks/123/priority",
+    "method": "PUT",
+    "status_code": 422,
+    "response": "b'{\"detail\":[{\"type\":\"missing\",\"loc\":[\"query\",\"priority\"],\"msg\":\"Field required\",\"input\":null,\"url\":\"https://errors.pydantic.dev/2.5/v/missing\"}]}'",
+    "success": false
+  },
+  {
+    "endpoint": "/voice/settings",
+    "method": "PUT",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  },
+  {
+    "endpoint": "/russ/status",
+    "method": "PUT",
+    "status_code": 500,
+    "response": "b'Internal Server Error'",
+    "success": false
+  }
+]
