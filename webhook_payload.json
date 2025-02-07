@@ -1,0 +1,17 @@
+{
+    "event_type": "task_update",
+    "data": {
+        "results": [
+            {
+                "id": "8740816612",
+                "content": "Return the completed bowel cancer screening test kit",
+                "description": "This is a letter from the Eastern Programme Hub, Nottingham University Hospitals NHS Trust, reminding Mr. Russell Batchelor to return a completed bowel cancer screening test kit. The letter explains the purpose of the test, provides instructions for obtaining a replacement kit or assistance, and outlines the next steps if the kit is not returned. Action is required to either return the completed test kit or contact the sender for further assistance or to opt out of the screening programme.",
+                "is_completed": false,
+                "labels": ["Newsletter"],
+                "docid": "8740816612",
+                "due_date": "2025-01-07",
+                "order": 41
+            }
+        ]
+    }
+} 

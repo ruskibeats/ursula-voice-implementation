@@ -7,5 +7,28 @@
 			"path": "../elevenlabs_project"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"sqltools.connections": [
+			{
+				"previewLimit": 50,
+				"server": "192.168.0.169",
+				"port": 5432,
+				"driver": "PostgreSQL",
+				"name": "Beehive",
+				"database": "Beehive",
+				"username": "russbee",
+				"password": "skimmer69"
+			},
+			{
+				"previewLimit": 50,
+				"server": "192.168.0.169",
+				"port": 5432,
+				"askForPassword": true,
+				"driver": "PostgreSQL",
+				"name": "beehive",
+				"database": "beehive",
+				"username": "russbee"
+			}
+		]
+	}
 }

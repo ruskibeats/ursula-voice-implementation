@@ -1,9 +1,9 @@
-import sqlite3
+import psycopg2
 import json
 from datetime import datetime, timedelta
 
 # Connect to database
-conn = sqlite3.connect('ursula.db')
+conn = psycopg2.connect('postgresql://russbee:skimmer69@192.168.0.169:5432/beehive')
 c = conn.cursor()
 
 # Sample family data

@@ -5,7 +5,7 @@ from enum import Enum
 import databases
 import sqlalchemy
 from datetime import datetime, timezone
-import sqlite3
+import psycopg2
 import os
 from fastapi import Path
 import json
@@ -26,7 +26,7 @@ from fastapi.responses import JSONResponse
 # Constants
 TODOIST_API_TOKEN = os.getenv("TODOIST_API_TOKEN", "e0617c43571f8e13254c5b49c1e561715380461d")
 TODOIST_API_BASE = "https://api.todoist.com/rest/v2"
-DATABASE_URL = "sqlite:///./ursula.db"
+DATABASE_URL = "postgresql://russbee:skimmer69@192.168.0.169:5432/beehive"
 
 # Metrics
 METRICS_REGISTRY = CollectorRegistry()
@@ -286,7 +286,7 @@ def init_db():
         # Initialize database with retries
         for attempt in range(3):
             try:
-                conn = sqlite3.connect('ursula.db')
+                conn = psycopg2.connect('postgresql://russbee:skimmer69@192.168.0.169:5432/beehive')
                 c = conn.cursor()
                 
                 # Read and execute schema
@@ -340,7 +340,7 @@ def init_db():
 
 async def check_db_connection():
     try:
-        conn = sqlite3.connect('ursula.db')
+        conn = psycopg2.connect('postgresql://russbee:skimmer69@192.168.0.169:5432/beehive')
         c = conn.cursor()
         c.execute("SELECT 1")
         conn.close()

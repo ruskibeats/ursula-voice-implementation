@@ -43,14 +43,16 @@ CREATE TABLE locations (
 );
 
 -- Tasks (Russ & Charlotte's Organization)
-CREATE TABLE tasks (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    priority TEXT NOT NULL,  -- 🔥 RED, 🟠 ORANGE, 🟡 YELLOW, 🟢 GREEN
-    category TEXT NOT NULL,
-    notes TEXT,
-    deadline TIMESTAMP,
-    status TEXT DEFAULT 'pending'
+CREATE TABLE IF NOT EXISTS tasks (
+    id TEXT PRIMARY KEY,
+    content TEXT NOT NULL,
+    description TEXT,
+    is_completed BOOLEAN DEFAULT FALSE,
+    labels TEXT,  -- JSON array as text
+    docid TEXT,
+    due_date DATE,
+    comments TEXT,
+    task_order INTEGER
 );
 
 -- Escalation Patterns
@@ -173,6 +175,50 @@ CREATE TABLE IF NOT EXISTS task_warfare (
     UNIQUE(tactic_name)
 );
 
+-- Tasks Table in Public Schema
+CREATE TABLE IF NOT EXISTS public.tasks (
+    id TEXT PRIMARY KEY,
+    message_id TEXT,
+    contact_id TEXT,
+    status TEXT,
+    priority TEXT,
+    created_at TIMESTAMP,
+    completed_at TIMESTAMP,
+    description TEXT,
+    content TEXT NOT NULL,
+    is_completed BOOLEAN DEFAULT FALSE,
+    labels TEXT,  -- JSON array as text
+    docid TEXT,
+    "Due Date" DATE,
+    "Comments" TEXT,
+    "Order" INTEGER
+);
+
+-- Create indexes for tasks
+CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON public.tasks("Due Date");
+CREATE INDEX IF NOT EXISTS idx_tasks_completed ON public.tasks(is_completed);
+CREATE INDEX IF NOT EXISTS idx_tasks_order ON public.tasks("Order");
+CREATE INDEX IF NOT EXISTS idx_tasks_status ON public.tasks(status);
+CREATE INDEX IF NOT EXISTS idx_tasks_priority ON public.tasks(priority);
+CREATE INDEX IF NOT EXISTS idx_tasks_created ON public.tasks(created_at);
+
+-- Insert initial task data
+INSERT INTO public.tasks (id, content, description, is_completed, labels, docid, "Due Date", "Comments", "Order") VALUES
+('8740816612', 'Return the completed bowel cancer screening test kit', 'This is a letter from the Eastern Programme Hub, Nottingham University Hospitals NHS Trust, reminding Mr. Russell Batchelor to return a completed bowel cancer screening test kit. The letter explains the purpose of the test, provides instructions for obtaining a replacement kit or assistance, and outlines the next steps if the kit is not returned. Action is required to either return the completed test kit or contact the sender for further assistance or to opt out of the screening programme.', FALSE, '["Newsletter"]', '8740816612', '2025-01-07', NULL, 41),
+('8752500487', 'Sort landrover car', 'Sort landrover, fix and repair the tranfer box. Send Car to bridge street', FALSE, '[]', '8752500487', NULL, NULL, 44),
+('8752506501', 'Study room sort', NULL, FALSE, '[]', '8752506501', NULL, 'Study sort\nThrow away unnessary paper and rubbish burn\nEmpty file cabinet\nClear desk\nFile and store anything useful\n<add task details here>\n\nSent from Outlook for iOS<https://aka.ms/o0ukef>\nStudy sort\nThrow away unnessary paper and rubbish burn\nEmpty file cabinet\nClear desk\nFile and store anything useful\n<add task details here>\n\nSent from Outlook for iOS<https://aka.ms/o0ukef>', 45),
+('8776264536', 'Flow Expense Claims Follow-up: Process fuel claims for team members', NULL, FALSE, '["urgent"]', '8776264536', '2025-01-16', NULL, 36),
+('8796533579', 'Confirm identity or provide information about Russell Batchelor\n\nRespond via online form, QR code, or phone', 'This letter is from The Tracing Group Ltd, working on behalf of First Actuarial, to locate Russell Batchelor, born in 1970, regarding potential pension benefits in the Northgate HR Pension Scheme. The recipient is asked to confirm if they are the person in question or provide information about them. The letter provides instructions to respond via an online form, QR code, or phone. It assures compliance with GDPR and data protection laws.', FALSE, '["Newsletter"]', '8796533579', '2025-01-15', NULL, 50),
+('8806521987', 'Penalty notice issued by HM Revenue & Customs to HILOKA LTD.', 'This document is a late submission It informs the recipient of a £200 penalty due to the late submission of a VAT return for the accounting period 01 September 2024 to 30 November 2024. The document outlines payment methods, provides details for requesting a review or appeal, and explains the penalty points system. The recipient is required to pay the penalty within 30 days and submit the overdue VAT return if not already done.', FALSE, '["Newsletter"]', '8806521987', NULL, 'I am trying to close down Hiloka Ltd, Russ to investigate.\nI am trying to close down Hiloka Ltd, Russ to investigate.', 51),
+('8806522033', 'Pay the Corporation Tax by 1 February 2025\n\nFile the Company Tax Return for the specified period if not already done\n\nInform HMRC if no Corporation Tax is due to avoid further reminders', 'This document is a payment reminder issued by HM Revenue and Customs regarding Corporation Tax for the accounting period from 1 May 2023 to 30 April 2024. The payment is due by 1 February 2025, and the document provides instructions on how to pay, including the required payment reference and bank details. It also warns about potential penalties for late payments and the need to file a tax return even if the company has nil profit or is dormant.', FALSE, '["Newsletter"]', '8806522033', '2025-01-18', 'Not paying tax on Hiloka I am trying to shut it down\nNot paying tax on Hiloka I am trying to shut it down', 52),
+('8806522093', 'Thomas Batchelor to attend the DAFNE', 'This letter is an invitation for Mr. Thomas Batchelor to attend the DAFNE (Dose Adjustment for Normal Eating) education programme to help manage his type 1 diabetes. The programme includes a pre-course assessment, a 5-day course, and a follow-up session. The letter outlines course formats, benefits, and alternative online courses. Action is required to confirm attendance or opt for an alternative course.', FALSE, '["Newsletter"]', '8806522093', '2025-01-22', NULL, 53),
+('8837882562', 'Contact the service to confirm attendance or opt for an alternative course.', NULL, FALSE, '[]', '8837882562', NULL, NULL, 54),
+('8837885942', 'Submit the overdue VAT return for the period if not already submitted', NULL, FALSE, '[]', '8837885942', NULL, NULL, 54),
+('8837886103', 'Request a review or appeal if disagreeing with the penalty', NULL, FALSE, '[]', '8837886103', NULL, NULL, 55),
+('8837887868', 'Contact the sender if a replacement kit is needed', NULL, FALSE, '[]', '8837887868', NULL, NULL, 54),
+('8837888009', 'Contact the sender for assistance or to opt out of the screening programme', NULL, FALSE, '[]', '8837888009', NULL, NULL, 55),
+('8857309652', 'Make payment of EUR 6,972.00 by 28 Dec 2024', 'This document is a tax invoice from Flow Communications Europe to Hiloka Ltd, dated 30 Nov 2024, for fibre optic installation services amounting to EUR 6,972.00. Payment is due by 28 Dec 2024. The invoice specifies no VAT was charged on the transaction.', FALSE, '["Newsletter"]', '8857309652', '2024-12-05', NULL, 54);
+
 -- Initial data: Family
 INSERT INTO family (name, relation, status, details, impact) VALUES
 ('Danny O''Sullivan', 'Father', 'Deceased (Lung Cancer)', 'Southie dockworker, taught Ursula the hustle & street smarts. Had ties to Irish mob.', 'Shaped her blend of street smarts and tough love'),
@@ -235,4 +281,20 @@ INSERT OR REPLACE INTO management_rules (category, rule, reasoning, importance_l
 INSERT OR REPLACE INTO task_warfare (tactic_name, situation, execution_steps, success_conditions, fallback_plan) VALUES
 ('The Double Deadline', 'Time-sensitive tasks', '1. Set real deadline\n2. Tell client earlier deadline\n3. Build buffer', 'Task completed before real deadline', 'Emergency network activation'),
 ('The Guilt Trip', 'Medical appointments', '1. Reference past failures\n2. Mention consequences\n3. Offer support', 'Client self-motivates', 'Direct intervention'),
-('The Information Cascade', 'Complex projects', '1. Break into micro-steps\n2. Reveal steps gradually\n3. Maintain momentum', 'Client completes without overwhelm', 'Take over critical steps'); 
+('The Information Cascade', 'Complex projects', '1. Break into micro-steps\n2. Reveal steps gradually\n3. Maintain momentum', 'Client completes without overwhelm', 'Take over critical steps');
+
+UPDATE public.tasks 
+SET 
+    status = CASE 
+        WHEN "Due Date" < CURRENT_DATE THEN 'overdue'
+        WHEN "Due Date" IS NOT NULL THEN 'pending'
+        ELSE 'open'
+    END,
+    priority = CASE 
+        WHEN labels LIKE '%"urgent"%' THEN 'high'
+        WHEN "Due Date" < CURRENT_DATE THEN 'high'
+        WHEN "Due Date" IS NOT NULL THEN 'medium'
+        ELSE 'low'
+    END,
+    created_at = CURRENT_TIMESTAMP
+WHERE status IS NULL; 
